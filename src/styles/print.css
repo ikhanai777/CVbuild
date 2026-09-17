@@ -1,0 +1,76 @@
+/* ---------------------------------------------------------------------------
+   Print rules.
+
+   The whole app is hidden and a single off-screen copy of the CV is promoted to
+   be the printed document. That way "Save as PDF" produces the CV itself —
+   selectable text at true size — rather than a screenshot of the editor.
+
+   The @page size rule is injected at print time by lib/export/print.ts, because
+   paper size is a user setting and @page cannot read CSS variables.
+--------------------------------------------------------------------------- */
+
+.print-root {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+@media print {
+  html,
+  body {
+    height: auto;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .app > .toolbar,
+  .app__body,
+  .modal-backdrop {
+    display: none !important;
+  }
+
+  .print-root {
+    position: static;
+    left: auto;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .print-root .cv-page {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0;
+    /* The page grows with content; the browser paginates it against @page. */
+    min-height: var(--cv-page-height);
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Keep headings with their content and never split a bullet across pages. */
+  .cv-section__title,
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .cv-entry,
+  .cv-bullets li,
+  .cv-reference,
+  .cv-publications li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Coloured bands and tinted rails must survive the print pipeline. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

@@ -1,0 +1,436 @@
+/* ---------------------------------------------------------------------------
+   Template themes. Each block re-skins the shared markup from cv-base.css.
+--------------------------------------------------------------------------- */
+
+/* 1. ATS Classic — the safest structure for machine parsing. ------------- */
+.tpl-ats-classic {
+  --cv-base-size: 10.5pt;
+}
+.tpl-ats-classic .cv-name {
+  color: #000;
+  font-size: 1.7em;
+  letter-spacing: 0.02em;
+}
+.tpl-ats-classic .cv-headline {
+  color: #222;
+  font-weight: 600;
+}
+.tpl-ats-classic .cv-section__title {
+  color: #000;
+  border-bottom: 1px solid #000;
+  padding-bottom: 0.12em;
+  letter-spacing: 0.06em;
+}
+.tpl-ats-classic .cv-bullets li::marker {
+  color: #000;
+}
+
+/* 2. Harvard Serif — careers-office standard. ---------------------------- */
+.tpl-harvard {
+  --cv-base-size: 10.4pt;
+}
+.tpl-harvard .cv-name {
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #111;
+}
+.tpl-harvard .cv-header--centered {
+  border-bottom: 1.5px solid #111;
+  padding-bottom: 2.5mm;
+}
+.tpl-harvard .cv-headline {
+  font-style: italic;
+  color: #333;
+}
+.tpl-harvard .cv-section__title {
+  color: #111;
+  border-bottom: 0.6px solid #999;
+  padding-bottom: 0.1em;
+}
+.tpl-harvard .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-harvard .cv-entry__subtitle {
+  font-style: italic;
+}
+
+/* 3. Modern Professional — accent rules, still single column. ------------ */
+.tpl-modern .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 2.5mm;
+}
+.tpl-modern .cv-section__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cv-accent-line);
+}
+.tpl-modern .cv-header--split {
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 2.5mm;
+}
+.tpl-modern .cv-entry__dates {
+  font-weight: 600;
+  color: var(--cv-accent);
+}
+
+/* 4. Executive Brief — scope-first, small caps. -------------------------- */
+.tpl-executive {
+  --cv-base-size: 10.6pt;
+}
+.tpl-executive .cv-name {
+  font-size: 2.1em;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tpl-executive .cv-header--centered {
+  border-bottom: 3px double var(--cv-accent);
+  padding-bottom: 3mm;
+}
+.tpl-executive .cv-headline {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  margin-top: 0.5em;
+}
+.tpl-executive .cv-section__title {
+  text-align: center;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  border-top: 0.6px solid var(--cv-accent-line);
+  border-bottom: 0.6px solid var(--cv-accent-line);
+  padding: 0.22em 0;
+}
+.tpl-executive .cv-section--summary .cv-summary {
+  text-align: justify;
+  font-size: 1.02em;
+}
+
+/* 5. Minimal Swiss — heading rail, generous space. ----------------------- */
+.tpl-swiss {
+  --cv-base-size: 10pt;
+}
+.tpl-swiss .cv-section {
+  display: grid;
+  grid-template-columns: 24% 1fr;
+  gap: 5mm;
+  border-top: 0.6px solid var(--cv-rule);
+  padding-top: 2.5mm;
+}
+.tpl-swiss .cv-section__title {
+  letter-spacing: 0.02em;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin: 0;
+}
+.tpl-swiss .cv-name {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.tpl-swiss .cv-header--bold-left {
+  padding-bottom: 4mm;
+}
+.tpl-swiss .cv-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+.tpl-swiss .cv-bullets li {
+  position: relative;
+  padding-left: 3.5mm;
+}
+.tpl-swiss .cv-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 2mm;
+  height: 0.6px;
+  background: var(--cv-accent);
+}
+
+/* 6. Compact One-Page — maximum content per page. ------------------------ */
+.tpl-compact {
+  --cv-base-size: 10pt;
+}
+.tpl-compact .cv-section__title {
+  border-bottom: 0.6px solid var(--cv-rule);
+  font-size: 0.86em;
+  margin-bottom: 0.3em;
+}
+.tpl-compact .cv-entry {
+  margin-top: 0.45em;
+}
+.tpl-compact .cv-entry__head {
+  gap: 2mm;
+}
+.tpl-compact .cv-bullets {
+  margin-top: 0.15em;
+}
+.tpl-compact .cv-bullets li {
+  margin-bottom: 0.05em;
+}
+
+/* 7. Two-Column Classic — tinted left rail. ------------------------------ */
+.tpl-twocol .cv-side {
+  background: var(--cv-accent-soft);
+  padding: 4.5mm;
+  border-radius: 2px;
+}
+.tpl-twocol .cv-header--stacked {
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 3mm;
+}
+.tpl-twocol .cv-main .cv-section__title {
+  border-bottom: 1px solid var(--cv-accent-line);
+  padding-bottom: 0.12em;
+}
+.tpl-twocol .cv-side .cv-skill {
+  display: block;
+}
+.tpl-twocol .cv-side .cv-skill + .cv-skill::before {
+  content: none;
+}
+
+/* 8. Elegant Sidebar — serif body, tinted right rail. -------------------- */
+.tpl-elegant {
+  --cv-base-size: 10.2pt;
+}
+.tpl-elegant .cv-side {
+  background: var(--cv-accent-soft);
+  padding: 5mm;
+}
+.tpl-elegant .cv-name {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.tpl-elegant .cv-header--split {
+  border-bottom: 0.6px solid var(--cv-accent-line);
+  padding-bottom: 3mm;
+}
+.tpl-elegant .cv-section__title {
+  font-weight: 600;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 1.05em;
+}
+.tpl-elegant .cv-entry__title {
+  font-weight: 600;
+}
+
+/* 9. Tech Matrix — dark rail, monospaced labels. ------------------------- */
+.tpl-tech {
+  --cv-base-size: 10pt;
+}
+.tpl-tech .cv-side {
+  background: #12212b;
+  color: #dbe7ee;
+  padding: 5mm;
+  border-radius: 2px;
+}
+.tpl-tech .cv-side .cv-section__title,
+.tpl-tech .cv-side .cv-skill-group__label {
+  color: #7fd1c4;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.82em;
+}
+.tpl-tech .cv-side .cv-list__sub,
+.tpl-tech .cv-side .cv-list__meta {
+  color: #9db3c0;
+}
+.tpl-tech .cv-side .cv-skill {
+  display: inline-block;
+  border: 0.6px solid rgba(219, 231, 238, 0.35);
+  border-radius: 2px;
+  padding: 0.05em 0.4em;
+  margin: 0 0.25em 0.3em 0;
+  font-size: 0.88em;
+}
+.tpl-tech .cv-side .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-tech .cv-main .cv-section__title {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85em;
+}
+.tpl-tech .cv-main .cv-section__title::before {
+  content: '// ';
+  opacity: 0.55;
+}
+.tpl-tech .cv-entry__dates {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85em;
+}
+
+/* 10. Creative Band — full-bleed colour header. -------------------------- */
+.tpl-band .cv-name {
+  font-size: 2.2em;
+  font-weight: 700;
+}
+.tpl-band .cv-side .cv-skill {
+  display: inline-block;
+  background: var(--cv-accent-soft);
+  border-radius: 999px;
+  padding: 0.08em 0.62em;
+  margin: 0 0.25em 0.32em 0;
+  font-size: 0.9em;
+}
+.tpl-band .cv-side .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-band .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.tpl-band .cv-section__title::before {
+  content: '';
+  width: 3mm;
+  height: 3mm;
+  background: var(--cv-accent);
+  border-radius: 1px;
+  flex: none;
+}
+
+/* 11. Monogram Modern — tinted heading strips. --------------------------- */
+.tpl-monogram .cv-section__title {
+  background: var(--cv-accent-soft);
+  padding: 0.22em 0.5em;
+  border-left: 1mm solid var(--cv-accent);
+  border-radius: 1px;
+}
+.tpl-monogram .cv-name {
+  font-size: 1.8em;
+}
+.tpl-monogram .cv-entry__dates {
+  font-weight: 600;
+}
+
+/* 12. Career Timeline — dated markers down the main column. -------------- */
+.tpl-timeline .cv-section--experience .cv-section__body,
+.tpl-timeline .cv-section--education .cv-section__body {
+  border-left: 0.8px solid var(--cv-accent-line);
+  padding-left: 5mm;
+  margin-left: 1.5mm;
+}
+.tpl-timeline .cv-section--experience .cv-entry,
+.tpl-timeline .cv-section--education .cv-entry {
+  position: relative;
+}
+.tpl-timeline .cv-section--experience .cv-entry::before,
+.tpl-timeline .cv-section--education .cv-entry::before {
+  content: '';
+  position: absolute;
+  left: -6.1mm;
+  top: 0.45em;
+  width: 2.2mm;
+  height: 2.2mm;
+  border-radius: 50%;
+  background: var(--cv-accent);
+}
+.tpl-timeline .cv-entry__head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.tpl-timeline .cv-entry__meta {
+  text-align: left;
+  order: -1;
+  font-weight: 600;
+  color: var(--cv-accent);
+  font-size: 0.82em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tpl-timeline .cv-header--split {
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 3mm;
+}
+
+/* 13. Academic CV — dense, multi-page, publication-first. ---------------- */
+.tpl-academic {
+  --cv-base-size: 10.4pt;
+}
+.tpl-academic .cv-name {
+  font-size: 1.85em;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+.tpl-academic .cv-section__title {
+  border-bottom: 0.6px solid #333;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  font-size: 0.88em;
+}
+.tpl-academic .cv-entry {
+  margin-top: 0.55em;
+}
+.tpl-academic .cv-publications {
+  padding-left: 1.6em;
+}
+.tpl-academic .cv-publications li {
+  margin-bottom: 0.42em;
+}
+.tpl-academic .cv-entry__subtitle {
+  font-style: italic;
+}
+
+/* 14. Graduate Entry — education and projects first. --------------------- */
+.tpl-graduate .cv-section__title {
+  color: var(--cv-accent);
+  border-bottom: 1.5px solid var(--cv-accent);
+  padding-bottom: 0.1em;
+  display: inline-block;
+  min-width: 34%;
+}
+.tpl-graduate .cv-header--stacked {
+  padding-bottom: 2mm;
+}
+.tpl-graduate .cv-name {
+  font-size: 1.9em;
+}
+.tpl-graduate .cv-entry__title {
+  color: #111;
+}
+.tpl-graduate .cv-skill {
+  display: inline-block;
+  background: var(--cv-accent-soft);
+  border-radius: 2px;
+  padding: 0.02em 0.45em;
+  margin: 0 0.25em 0.25em 0;
+}
+.tpl-graduate .cv-skill + .cv-skill::before {
+  content: none;
+}
+
+/* 15. Detailed / Federal — completeness over brevity. -------------------- */
+.tpl-federal {
+  --cv-base-size: 11pt;
+}
+.tpl-federal .cv-name {
+  font-size: 1.6em;
+  color: #111;
+}
+.tpl-federal .cv-section__title {
+  color: #111;
+  text-decoration: underline;
+  letter-spacing: 0.05em;
+}
+.tpl-federal .cv-entry {
+  margin-top: 0.9em;
+}
+.tpl-federal .cv-entry__head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.tpl-federal .cv-entry__meta {
+  text-align: left;
+  font-size: 0.92em;
+}
+.tpl-federal .cv-bullets li {
+  margin-bottom: 0.3em;
+}

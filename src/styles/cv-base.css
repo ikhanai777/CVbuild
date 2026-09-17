@@ -1,0 +1,467 @@
+/* ---------------------------------------------------------------------------
+   Base CV document styles.
+
+   Every template renders this same markup; templates.css then re-skins it.
+   Sizes are in pt/mm so the on-screen preview is physically accurate and the
+   printed page matches it exactly.
+--------------------------------------------------------------------------- */
+
+.cv-page {
+  --cv-text: #15181d;
+  --cv-muted: #4b5563;
+  --cv-rule: #d4d8de;
+  --cv-base-size: 10.2pt;
+
+  width: var(--cv-page-width);
+  min-height: var(--cv-page-height);
+  box-sizing: border-box;
+  padding: var(--cv-margin);
+  background: #ffffff;
+  color: var(--cv-text);
+  font-family: var(--cv-font);
+  font-size: calc(var(--cv-base-size) * var(--cv-font-scale));
+  line-height: var(--cv-line-height);
+  position: relative;
+  overflow: hidden;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cv-page--preview {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.14);
+  border-radius: 2px;
+}
+
+.cv-page * {
+  box-sizing: border-box;
+}
+
+/* --- header ---------------------------------------------------------- */
+
+.cv-header {
+  margin-bottom: calc(var(--cv-section-gap) * 0.9);
+}
+
+.cv-name {
+  font-size: 1.95em;
+  line-height: 1.12;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--cv-accent);
+}
+
+.cv-headline {
+  font-size: 1.02em;
+  color: var(--cv-muted);
+  margin-top: 0.22em;
+  font-weight: 500;
+}
+
+.cv-contact {
+  list-style: none;
+  margin: 0.55em 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em 1.1em;
+  font-size: 0.87em;
+  color: var(--cv-muted);
+}
+
+.cv-contact__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}
+
+.cv-icon {
+  flex: none;
+  opacity: 0.8;
+  color: var(--cv-accent);
+}
+
+.cv-photo {
+  flex: none;
+}
+
+.cv-photo img {
+  width: 26mm;
+  height: 26mm;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+.cv-header--stacked {
+  display: flex;
+  gap: 5mm;
+  align-items: flex-start;
+}
+
+.cv-header--stacked .cv-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-header--centered {
+  text-align: center;
+}
+
+.cv-header--centered .cv-contact {
+  justify-content: center;
+}
+
+.cv-header--split {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 5mm;
+}
+
+.cv-header--split .cv-contact {
+  margin: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.18em;
+  text-align: right;
+  flex: none;
+}
+
+.cv-header--bold-left {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8mm;
+}
+
+.cv-header--bold-left .cv-name {
+  font-size: 2.6em;
+  max-width: 48%;
+  line-height: 1;
+}
+
+.cv-header--bold-left .cv-header__right {
+  text-align: right;
+  flex: 1;
+}
+
+.cv-header--bold-left .cv-contact {
+  justify-content: flex-end;
+}
+
+.cv-header--compact .cv-name {
+  font-size: 1.55em;
+}
+
+.cv-header--compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+
+.cv-header--compact .cv-contact {
+  margin-top: 0;
+  justify-content: flex-end;
+  flex: 1;
+  font-size: 0.82em;
+}
+
+.cv-header--monogram {
+  display: flex;
+  align-items: center;
+  gap: 4.5mm;
+}
+
+.cv-monogram {
+  flex: none;
+  width: 16mm;
+  height: 16mm;
+  border-radius: 3px;
+  background: var(--cv-accent);
+  color: var(--cv-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5em;
+  letter-spacing: 0.02em;
+}
+
+.cv-header--monogram .cv-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-header--band {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  background: var(--cv-accent);
+  color: var(--cv-on-accent);
+  margin: calc(var(--cv-margin) * -1) calc(var(--cv-margin) * -1) 0;
+  padding: 10mm 14mm;
+}
+
+.cv-header--band .cv-name,
+.cv-header--band .cv-headline,
+.cv-header--band .cv-contact,
+.cv-header--band .cv-icon {
+  color: inherit;
+}
+
+.cv-header--band .cv-headline,
+.cv-header--band .cv-contact {
+  opacity: 0.92;
+}
+
+.cv-header--band .cv-photo img {
+  border-radius: 50%;
+  border: 1.2mm solid rgba(255, 255, 255, 0.35);
+}
+
+/* --- body layouts ---------------------------------------------------- */
+
+.cv-body--single .cv-main,
+.cv-body--timeline .cv-main {
+  display: block;
+}
+
+.cv-body--sidebar-left,
+.cv-body--sidebar-right,
+.cv-body--header-band {
+  display: flex;
+  gap: 7mm;
+  align-items: flex-start;
+}
+
+.cv-body--header-band {
+  padding-top: 7mm;
+}
+
+.cv-body--sidebar-left .cv-side,
+.cv-body--sidebar-right .cv-side,
+.cv-body--header-band .cv-side {
+  width: var(--cv-sidebar-width);
+  flex: none;
+}
+
+.cv-body--sidebar-left .cv-main,
+.cv-body--sidebar-right .cv-main,
+.cv-body--header-band .cv-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-body--header-band {
+  padding-left: 14mm;
+  padding-right: 14mm;
+  margin-left: calc(var(--cv-margin) * -1);
+  margin-right: calc(var(--cv-margin) * -1);
+}
+
+/* --- sections -------------------------------------------------------- */
+
+.cv-section {
+  margin-top: var(--cv-section-gap);
+  break-inside: auto;
+}
+
+.cv-section:first-child {
+  margin-top: 0;
+}
+
+.cv-section__title {
+  font-size: 0.93em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: var(--cv-heading-transform);
+  color: var(--cv-accent);
+  margin: 0 0 0.45em;
+  break-after: avoid;
+}
+
+.cv-entry {
+  margin-top: 0.75em;
+  break-inside: avoid;
+}
+
+.cv-entry:first-child {
+  margin-top: 0;
+}
+
+.cv-entry--tight {
+  margin-top: 0.4em;
+}
+
+.cv-entry__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 3mm;
+}
+
+.cv-entry__titles {
+  min-width: 0;
+}
+
+.cv-entry__title {
+  font-size: 1em;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.cv-entry__subtitle {
+  font-size: 0.93em;
+  color: var(--cv-muted);
+}
+
+.cv-entry__meta {
+  flex: none;
+  text-align: right;
+  font-size: 0.86em;
+  color: var(--cv-muted);
+  white-space: nowrap;
+}
+
+.cv-entry__summary {
+  margin: 0.3em 0 0;
+  font-size: 0.95em;
+  color: var(--cv-muted);
+}
+
+.cv-bullets {
+  margin: 0.32em 0 0;
+  padding-left: 1.05em;
+}
+
+.cv-bullets li {
+  margin-bottom: 0.18em;
+  break-inside: avoid;
+}
+
+.cv-bullets li::marker {
+  color: var(--cv-accent);
+}
+
+.cv-summary {
+  margin: 0;
+}
+
+/* --- skills ---------------------------------------------------------- */
+
+.cv-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.cv-skill-group {
+  display: flex;
+  gap: 0.5em;
+  align-items: baseline;
+}
+
+.cv-skill-group__label {
+  font-weight: 700;
+  flex: none;
+  min-width: 22%;
+  font-size: 0.93em;
+}
+
+.cv-skill-group__items {
+  flex: 1;
+}
+
+.cv-skill + .cv-skill::before {
+  content: ' · ';
+  color: var(--cv-accent-line);
+}
+
+/* --- lists ----------------------------------------------------------- */
+
+.cv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cv-list li {
+  margin-bottom: 0.2em;
+}
+
+.cv-list__sub {
+  color: var(--cv-muted);
+}
+
+.cv-list__meta {
+  color: var(--cv-muted);
+  font-size: 0.88em;
+}
+
+.cv-list__meta::before {
+  content: ' · ';
+}
+
+.cv-list--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1em 1em;
+}
+
+.cv-inline-list {
+  margin: 0;
+}
+
+.cv-publications {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 0.95em;
+}
+
+.cv-publications li {
+  margin-bottom: 0.32em;
+}
+
+.cv-pub__title {
+  font-weight: 600;
+}
+
+.cv-references {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6em 1.2em;
+}
+
+.cv-reference__name {
+  font-weight: 700;
+}
+
+.cv-reference__meta,
+.cv-reference__contact {
+  color: var(--cv-muted);
+  font-size: 0.92em;
+}
+
+/* --- sidebar treatment ------------------------------------------------ */
+
+.cv-side .cv-section__title {
+  font-size: 0.88em;
+}
+
+.cv-side .cv-skill-group {
+  flex-direction: column;
+  gap: 0.05em;
+}
+
+.cv-side .cv-skill-group__label {
+  min-width: 0;
+}
+
+.cv-side .cv-list--inline {
+  flex-direction: column;
+  gap: 0.1em;
+}
