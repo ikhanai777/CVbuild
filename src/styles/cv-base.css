@@ -465,3 +465,21 @@
   flex-direction: column;
   gap: 0.1em;
 }
+
+/*
+ * A dated entry in a narrow rail cannot keep its title and dates on one row —
+ * the title is forced into a three- or four-line column beside the date. Stack
+ * them instead, so the rail reads top-to-bottom like the list it is. Only
+ * templates that put a dated section (education, projects) in the sidebar hit
+ * this; skills and languages render as lists and are unaffected.
+ */
+.cv-side .cv-entry__head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.cv-side .cv-entry__meta {
+  text-align: left;
+  white-space: normal;
+}

@@ -1,6 +1,6 @@
 # CVBuild
 
-A CV / resume builder with 16 print-ready templates, a writing coach built from
+A CV / resume builder with 22 print-ready templates, a writing coach built from
 recruiter-side guidance, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
@@ -45,7 +45,7 @@ something new, then treats prose following an entry header as a bullet that lost
 its marker. Without that, a three-role CV imports as six half-sentences spread
 over five jobs.
 
-### 16 templates
+### 22 templates
 
 Each is a genuinely different layout, not a colour swap. Every template renders
 the same content model, so switching never costs you a retype.
@@ -59,10 +59,16 @@ the same content model, so switching never costs you a retype.
 | | Executive Brief | Small caps, summary-led | ✅ |
 | | Minimal Swiss | Heading rail, hairline rules | ✅ |
 | | Engineering Standard | Stack under the summary, projects above education | ✅ |
+| | Ivory | Warm paper, serif display over a sans body | ✅ |
+| | Muse | Centred and light, headings between hairlines | ✅ |
 | **Two-column** | Two-Column Classic | Tinted left rail | ✖ |
 | | Elegant Sidebar | Serif body, tinted right rail | ✖ |
 | | Tech Matrix | Dark rail, monospaced labels | ✖ |
+| | Portfolio Rail | Portrait left, contact strip, dotted timeline | ✖ |
 | **Creative** | Creative Band | Full-bleed colour header, optional photo | ✖ |
+| | Studio Split | Heavy name block, ruled contacts, right rail | ✖ |
+| | Editorial | Wide tracking, hairlines, a great deal of air | ✖ |
+| | Couture | Very wide capitals, full-height column rule | ✖ |
 | | Monogram Modern | Initials tile, tinted heading strips | ✖ |
 | | Career Timeline | Dated markers down the main column | ✖ |
 | **Specialist** | Academic CV | Education and publications first, multi-page | ✅ |
@@ -87,6 +93,16 @@ weight than coursework — so it runs summary → skills → experience → proj
 education. It is the only engineering-oriented template that is ATS-safe (Tech
 Matrix is a sidebar design), which matters because engineers mostly apply
 through portals.
+
+**Studio Split, Portfolio Rail, Editorial and Couture** are the photo-forward
+designs, each built on a different device: ruled contact panels beside a heavy
+name block; a portrait over a divided contact strip with a dotted timeline of
+roles; wide tracking and hairlines with a lot of air; and very wide capitals
+over a full-height column rule. All four render correctly with no photo, which
+is how most people will use them. **Ivory** and **Muse** carry the same
+aesthetic into single-column layouts that stay portal-safe — Ivory pairs a serif
+display face with a sans body on warm paper, Muse centres everything and sets
+each heading between two hairlines.
 
 ### The writing coach
 
@@ -154,7 +170,7 @@ src/
   types/resume.ts            The document model everything reads and writes
   state/store.ts             Zustand store, localStorage persistence, undo/redo
   templates/
-    registry.ts              The 16 template definitions and their defaults
+    registry.ts              The 22 template definitions and their defaults
     applyTemplate.ts         Template switching, incl. the section-preset loan
     ResumeDocument.tsx       Layout engines + header variants
     Sections.tsx             Section renderers shared by every template
@@ -201,7 +217,7 @@ npm test
 
 52 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, Word generation for all 16 templates, and JSON round-tripping.
+switching, Word generation for all 22 templates, and JSON round-tripping.
 
 ## Notes and limits
 
