@@ -265,7 +265,244 @@
   font-size: 0.85em;
 }
 
-/* 10. Creative Band — full-bleed colour header. -------------------------- */
+/* 10. Terminal — a terminal window for a header, prompt-style bullets. --- */
+.tpl-terminal {
+  --cv-base-size: 10pt;
+  --cv-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+.tpl-terminal .cv-header--band {
+  padding-top: 9mm;
+  position: relative;
+}
+.tpl-terminal .cv-header--band::before {
+  /* Traffic-light window dots, always red/amber/green regardless of accent —
+     that colour trio is the whole visual joke, so it never themes. */
+  content: '';
+  position: absolute;
+  top: 4mm;
+  left: 14mm;
+  width: 2.6mm;
+  height: 2.6mm;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow:
+    5mm 0 0 #ffbd2e,
+    10mm 0 0 #27c93f;
+}
+.tpl-terminal .cv-header--band .cv-header__text {
+  margin-top: 3mm;
+}
+.tpl-terminal .cv-name,
+.tpl-terminal .cv-headline {
+  font-family: var(--cv-mono);
+}
+.tpl-terminal .cv-headline::before {
+  content: '~/ ';
+  opacity: 0.6;
+}
+.tpl-terminal .cv-contact__item {
+  font-family: var(--cv-mono);
+  font-size: 0.85em;
+}
+.tpl-terminal .cv-section__title {
+  font-family: var(--cv-mono);
+  font-weight: 600;
+}
+.tpl-terminal .cv-section__title::before {
+  content: '$ ';
+  color: var(--cv-accent);
+  opacity: 0.85;
+}
+.tpl-terminal .cv-entry__dates {
+  font-family: var(--cv-mono);
+  font-size: 0.82em;
+}
+.tpl-terminal .cv-entry__dates::before {
+  content: '[';
+}
+.tpl-terminal .cv-entry__dates::after {
+  content: ']';
+}
+.tpl-terminal .cv-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+.tpl-terminal .cv-bullets li {
+  position: relative;
+  padding-left: 4.2mm;
+}
+.tpl-terminal .cv-bullets li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--cv-accent);
+  font-family: var(--cv-mono);
+  font-weight: 700;
+}
+
+/* 11. Systems Blueprint — drafting grid, bordered title block. ----------- */
+.tpl-blueprint {
+  background-color: #fbfcfe;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      var(--cv-accent-soft) 0,
+      var(--cv-accent-soft) 0.3pt,
+      transparent 0.3pt,
+      transparent 8mm
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--cv-accent-soft) 0,
+      var(--cv-accent-soft) 0.3pt,
+      transparent 0.3pt,
+      transparent 8mm
+    );
+}
+.tpl-blueprint .cv-header--stacked {
+  border: 1pt solid var(--cv-accent);
+  padding: 5mm 6mm;
+  position: relative;
+}
+.tpl-blueprint .cv-header--stacked::before,
+.tpl-blueprint .cv-header--stacked::after {
+  /* Crop-mark corners, the way a technical drawing marks its title block. */
+  content: '';
+  position: absolute;
+  width: 3mm;
+  height: 3mm;
+}
+.tpl-blueprint .cv-header--stacked::before {
+  top: -1pt;
+  left: -1pt;
+  border-top: 1.4pt solid var(--cv-accent);
+  border-left: 1.4pt solid var(--cv-accent);
+}
+.tpl-blueprint .cv-header--stacked::after {
+  bottom: -1pt;
+  right: -1pt;
+  border-bottom: 1.4pt solid var(--cv-accent);
+  border-right: 1.4pt solid var(--cv-accent);
+}
+.tpl-blueprint .cv-name {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tpl-blueprint .cv-name::before {
+  content: 'PROFILE';
+  display: block;
+  font-size: 0.32em;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--cv-accent);
+  margin-bottom: 0.35em;
+}
+.tpl-blueprint .cv-section__title {
+  border-top: 1pt solid var(--cv-accent);
+  border-bottom: 0.5pt solid var(--cv-accent-line);
+  padding: 0.25em 0;
+  letter-spacing: 0.08em;
+}
+.tpl-blueprint .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-blueprint .cv-entry__dates {
+  font-variant-numeric: tabular-nums;
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-blueprint .cv-bullets li::marker {
+  color: var(--cv-accent);
+}
+
+/* 12. Git Changelog — versioned headers, diff-style bullets. ------------- */
+.tpl-changelog {
+  --cv-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+.tpl-changelog .cv-header--compact .cv-name {
+  font-family: var(--cv-mono);
+  font-weight: 700;
+}
+.tpl-changelog .cv-headline {
+  display: inline-block;
+  margin-top: 0.3em;
+  padding: 0.05em 0.55em;
+  border-radius: 999px;
+  background: var(--cv-accent-soft);
+  color: var(--cv-accent);
+  font-family: var(--cv-mono);
+  font-size: 0.82em;
+  font-weight: 600;
+}
+.tpl-changelog .cv-section__title {
+  font-family: var(--cv-mono);
+  font-weight: 700;
+  text-transform: none;
+}
+.tpl-changelog .cv-section__title::before {
+  content: '## ';
+  color: var(--cv-accent-line);
+}
+.tpl-changelog .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-changelog .cv-entry__dates {
+  font-family: var(--cv-mono);
+  font-size: 0.8em;
+  border: 0.6px solid var(--cv-accent-line);
+  border-radius: 3px;
+  padding: 0.05em 0.5em;
+  color: var(--cv-accent);
+}
+.tpl-changelog .cv-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+.tpl-changelog .cv-bullets li {
+  position: relative;
+  padding-left: 4mm;
+}
+.tpl-changelog .cv-bullets li::before {
+  content: '+';
+  position: absolute;
+  left: 0;
+  font-family: var(--cv-mono);
+  font-weight: 700;
+  color: var(--cv-accent);
+}
+
+/* 13. Stack Ledger — ATS-safe, tech-stack badges. ------------------------ */
+.tpl-ledger .cv-header--split {
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 2.5mm;
+}
+.tpl-ledger .cv-section__title {
+  letter-spacing: 0.09em;
+  border-bottom: 1px solid var(--cv-accent-line);
+  padding-bottom: 0.15em;
+}
+.tpl-ledger .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-ledger .cv-entry__dates {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.83em;
+  font-variant-numeric: tabular-nums;
+}
+.tpl-ledger .cv-skill {
+  display: inline-block;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.86em;
+  border: 0.7px solid var(--cv-accent-line);
+  border-radius: 3px;
+  padding: 0.04em 0.45em;
+  margin: 0 0.3em 0.3em 0;
+}
+.tpl-ledger .cv-skill + .cv-skill::before {
+  content: none;
+}
+
+/* 14. Creative Band — full-bleed colour header. -------------------------- */
 .tpl-band .cv-name {
   font-size: 2.2em;
   font-weight: 700;
@@ -295,7 +532,7 @@
   flex: none;
 }
 
-/* 11. Monogram Modern — tinted heading strips. --------------------------- */
+/* 15. Monogram Modern — tinted heading strips. --------------------------- */
 .tpl-monogram .cv-section__title {
   background: var(--cv-accent-soft);
   padding: 0.22em 0.5em;
@@ -309,7 +546,7 @@
   font-weight: 600;
 }
 
-/* 12. Career Timeline — dated markers down the main column. -------------- */
+/* 16. Career Timeline — dated markers down the main column. -------------- */
 .tpl-timeline .cv-section--experience .cv-section__body,
 .tpl-timeline .cv-section--education .cv-section__body {
   border-left: 0.8px solid var(--cv-accent-line);
@@ -350,7 +587,7 @@
   padding-bottom: 3mm;
 }
 
-/* 13. Academic CV — dense, multi-page, publication-first. ---------------- */
+/* 17. Academic CV — dense, multi-page, publication-first. ---------------- */
 .tpl-academic {
   --cv-base-size: 10.4pt;
 }
@@ -378,7 +615,7 @@
   font-style: italic;
 }
 
-/* 14. Graduate Entry — education and projects first. --------------------- */
+/* 18. Graduate Entry — education and projects first. --------------------- */
 .tpl-graduate .cv-section__title {
   color: var(--cv-accent);
   border-bottom: 1.5px solid var(--cv-accent);
@@ -406,7 +643,7 @@
   content: none;
 }
 
-/* 15. Detailed / Federal — completeness over brevity. -------------------- */
+/* 19. Detailed / Federal — completeness over brevity. -------------------- */
 .tpl-federal {
   --cv-base-size: 11pt;
 }
