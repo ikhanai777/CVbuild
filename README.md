@@ -1,6 +1,6 @@
 # CVBuild
 
-A CV / resume builder with 15 print-ready templates, a writing coach built from
+A CV / resume builder with 16 print-ready templates, a writing coach built from
 recruiter-side guidance, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
@@ -11,7 +11,7 @@ data leaves the machine.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 50 tests
+npm test         # 52 tests
 npm run build
 ```
 
@@ -45,7 +45,7 @@ something new, then treats prose following an entry header as a bullet that lost
 its marker. Without that, a three-role CV imports as six half-sentences spread
 over five jobs.
 
-### 15 templates
+### 16 templates
 
 Each is a genuinely different layout, not a colour swap. Every template renders
 the same content model, so switching never costs you a retype.
@@ -58,6 +58,7 @@ the same content model, so switching never costs you a retype.
 | **Modern professional** | Modern Professional | Accent rules, generous spacing | ✅ |
 | | Executive Brief | Small caps, summary-led | ✅ |
 | | Minimal Swiss | Heading rail, hairline rules | ✅ |
+| | Engineering Standard | Stack under the summary, projects above education | ✅ |
 | **Two-column** | Two-Column Classic | Tinted left rail | ✖ |
 | | Elegant Sidebar | Serif body, tinted right rail | ✖ |
 | | Tech Matrix | Dark rail, monospaced labels | ✖ |
@@ -78,6 +79,14 @@ A few templates impose their own section order (the Academic CV drops the
 summary and leads with education). That layout is treated as a loan: switch away
 and your own order comes back, so a template can never silently hide a section
 you wrote.
+
+**Engineering Standard** is ordering, not decoration. A generic CV buries skills
+below education; for engineering roles the stack is the first thing both the
+keyword filter and the hiring engineer look for, and shipped projects carry more
+weight than coursework — so it runs summary → skills → experience → projects →
+education. It is the only engineering-oriented template that is ATS-safe (Tech
+Matrix is a sidebar design), which matters because engineers mostly apply
+through portals.
 
 ### The writing coach
 
@@ -145,7 +154,7 @@ src/
   types/resume.ts            The document model everything reads and writes
   state/store.ts             Zustand store, localStorage persistence, undo/redo
   templates/
-    registry.ts              The 15 template definitions and their defaults
+    registry.ts              The 16 template definitions and their defaults
     applyTemplate.ts         Template switching, incl. the section-preset loan
     ResumeDocument.tsx       Layout engines + header variants
     Sections.tsx             Section renderers shared by every template
@@ -190,9 +199,9 @@ losing anything.
 npm test
 ```
 
-50 tests covering the CV parser (headings, contacts, entry splitting, date
+52 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, Word generation for all 15 templates, and JSON round-tripping.
+switching, Word generation for all 16 templates, and JSON round-tripping.
 
 ## Notes and limits
 

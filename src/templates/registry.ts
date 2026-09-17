@@ -338,6 +338,42 @@ export const TEMPLATES: TemplateDefinition[] = [
       margin: 20,
     },
   },
+  {
+    id: 'engineering-standard',
+    name: 'Engineering Standard',
+    category: 'Modern professional',
+    description:
+      'Puts the tech stack directly under the summary and projects above education — the order an engineering CV is actually read in. Single column, so it still survives an application portal.',
+    bestFor: ['Software engineering', 'Data & infrastructure', 'Online applications'],
+    atsSafe: true,
+    layout: 'single',
+    header: 'split',
+    className: 'tpl-engineering',
+    defaults: {
+      accentColor: '#334155',
+      fontFamily: 'Inter',
+      uppercaseHeadings: true,
+      margin: 15,
+      // The point of the template. A generic CV buries skills under education;
+      // for engineering roles the stack is the first thing both the keyword
+      // filter and the hiring engineer look for, and shipped projects carry
+      // more weight than coursework.
+      sectionOrder: [
+        'summary',
+        'skills',
+        'experience',
+        'projects',
+        'education',
+        'certifications',
+        'awards',
+        'publications',
+        'languages',
+        'volunteer',
+        'interests',
+        'references',
+      ],
+    },
+  },
 ];
 
 export const DEFAULT_TEMPLATE_ID = 'ats-classic';
@@ -378,4 +414,5 @@ export const ACCENT_PRESETS = [
   '#6b3f5b',
   '#b3452f',
   '#8a5a2b',
+  '#334155',
 ];

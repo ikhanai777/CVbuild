@@ -434,3 +434,71 @@
 .tpl-federal .cv-bullets li {
   margin-bottom: 0.3em;
 }
+
+/* 16. Engineering Standard — stack-forward, single column. --------------- */
+.tpl-engineering {
+  --cv-base-size: 10.2pt;
+  --cv-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+.tpl-engineering .cv-header--split {
+  border-bottom: 1.5px solid var(--cv-accent);
+  padding-bottom: 2.5mm;
+}
+.tpl-engineering .cv-name {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.tpl-engineering .cv-headline,
+.tpl-engineering .cv-contact__item {
+  font-family: var(--cv-mono);
+  font-size: 0.85em;
+}
+/* A short accent bar marks each heading instead of a full-width rule, which
+   keeps the tighter engineering section list from reading as a stack of lines. */
+.tpl-engineering .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  font-size: 0.86em;
+  letter-spacing: 0.12em;
+}
+.tpl-engineering .cv-section__title::before {
+  content: '';
+  width: 4mm;
+  height: 1.2mm;
+  background: var(--cv-accent);
+  flex: none;
+}
+.tpl-engineering .cv-entry__dates {
+  font-family: var(--cv-mono);
+  font-size: 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+/* The stack reads as code, but each item is still plain text in the markup, so
+   a parser gets every term — which is the whole point of an ATS-safe design. */
+.tpl-engineering .cv-skill {
+  display: inline-block;
+  font-family: var(--cv-mono);
+  font-size: 0.85em;
+  border: 0.7px solid var(--cv-accent-line);
+  border-radius: 2px;
+  padding: 0.05em 0.45em;
+  margin: 0 0.3em 0.3em 0;
+}
+.tpl-engineering .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-engineering .cv-skill-group {
+  align-items: flex-start;
+}
+.tpl-engineering .cv-skill-group__label {
+  font-family: var(--cv-mono);
+  font-size: 0.85em;
+  padding-top: 0.2em;
+}
+.tpl-engineering .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-engineering .cv-bullets li::marker {
+  color: var(--cv-accent);
+}

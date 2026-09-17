@@ -34,6 +34,25 @@ describe('applyTemplate', () => {
     expect(after.userSectionOrder).toBeNull();
   });
 
+  it('promotes the tech stack and projects for Engineering Standard', () => {
+    const next = applyTemplate(base(), 'engineering-standard');
+    const order = next.sectionOrder;
+    // The reason this template exists: skills sit directly under the summary,
+    // and shipped projects rank above coursework.
+    expect(order.indexOf('skills')).toBe(order.indexOf('summary') + 1);
+    expect(order.indexOf('projects')).toBeLessThan(order.indexOf('education'));
+    expect(order.indexOf('experience')).toBeLessThan(order.indexOf('projects'));
+    // It stays portal-safe, so nothing is hidden and it is still one column.
+    expect(next.hiddenSections).toEqual(base().hiddenSections);
+  });
+
+  it('hands the order back when leaving Engineering Standard', () => {
+    const before = base();
+    const after = applyTemplate(applyTemplate(before, 'engineering-standard'), 'ats-classic');
+    expect(after.sectionOrder).toEqual(before.sectionOrder);
+    expect(after.sectionPreset).toBeNull();
+  });
+
   it('keeps custom sections when a preset takes over', () => {
     const settings = base();
     settings.sectionOrder = [...settings.sectionOrder, 'custom:abc'];
