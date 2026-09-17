@@ -1424,6 +1424,31 @@ select.input {
   overflow: auto;
 }
 
+.modal--ask {
+  width: min(440px, 100%);
+}
+
+.ask__message {
+  margin: 0 0 10px;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.modal--ask .modal__body {
+  padding-bottom: 6px;
+}
+
+.btn--danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #fff;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #a5301f;
+  border-color: #a5301f;
+}
+
 .dropzone {
   border: 2px dashed var(--border-strong);
   border-radius: var(--radius);

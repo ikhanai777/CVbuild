@@ -11,7 +11,7 @@ data leaves the machine.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 43 tests
+npm test         # 50 tests
 npm run build
 ```
 
@@ -36,6 +36,14 @@ each section into dated entries with their bullets. The import screen shows what
 it read, which headings it recognised and what it is unsure about, next to a
 live preview — parsing a CV is guesswork, and it says so rather than quietly
 dropping a job.
+
+Two things make PDF-sourced CVs the hard case, and both are handled explicitly.
+A PDF has no list markers — bullets are *drawn*, not written, so they never
+reach the text layer — and it has no paragraphs, so one bullet arrives as two or
+three hard-wrapped fragments. The parser re-joins lines that cannot be starting
+something new, then treats prose following an entry header as a bullet that lost
+its marker. Without that, a three-role CV imports as six half-sentences spread
+over five jobs.
 
 ### 15 templates
 
@@ -110,6 +118,9 @@ tailoring per application, and what loses applications.
 - **PDF** — printed through the browser's own pipeline, so the text stays
   selectable and searchable. A rasterised PDF is unreadable to every ATS, which
   would undo the rest of the app's work. Choose "Save as PDF" in the dialog.
+  When the app is running inside an iframe — where `window.print()` is commonly
+  blocked by the frame sandbox — the CV is written into a new top-level window
+  and printed from there instead.
 - **Word (.docx)** — a real Word document built with the `docx` library:
   styled paragraphs, tab-stopped dates, genuine bullet lists, and two-column
   templates flattened into a borderless table so text keeps reading order.
@@ -154,7 +165,19 @@ src/
     export/json.ts           JSON export, import and migration
   data/playbook.ts           The strategy library shown in the Guide tab
   components/                Editor, template gallery, design, review, import
+  components/dialogs.tsx     In-app confirm/prompt (see below)
+scripts/
+  make-artifact-page.mjs     Derives dist/artifact.html for body-only hosts
 ```
+
+Two details exist because the app has to survive being embedded in a sandboxed
+iframe, where the browser silently ignores things a normal page can rely on.
+`confirm()`, `prompt()` and `alert()` are no-ops without `allow-modals`, and
+`<form>` submission is blocked without `allow-forms` — so deletes and renames go
+through `components/dialogs.tsx`, which uses neither. `npm run build` also
+rewrites raw control characters and literal U+FFFD in the bundled dependencies
+(pdf.js and `string_decoder` carry them) as escape sequences, so the output is
+plain text for hosts that reject binary-looking JavaScript.
 
 Every template renders the same markup from `Sections.tsx` and differs only in
 CSS and in how the layout engine arranges the blocks. That is what makes 15
@@ -167,7 +190,7 @@ losing anything.
 npm test
 ```
 
-43 tests covering the CV parser (headings, contacts, entry splitting, date
+50 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
 switching, Word generation for all 15 templates, and JSON round-tripping.
 

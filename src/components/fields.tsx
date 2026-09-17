@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { BULLET_PATTERNS } from '../data/playbook';
+import { askConfirm } from './dialogs';
 import { hasMetric, startsWithActionVerb, suggestVerbs, weakOpener, wordCount } from '../lib/analysis/language';
 
 export function Field({
@@ -389,8 +390,8 @@ export function EntryCard({
             type="button"
             className="icon-btn icon-btn--danger"
             title="Delete"
-            onClick={() => {
-              if (confirm('Delete this entry? You can undo with Ctrl+Z.')) onRemove();
+            onClick={async () => {
+              if (await askConfirm('Delete this entry? You can undo with Ctrl+Z.')) onRemove();
             }}
           >
             ×

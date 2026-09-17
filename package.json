@@ -6,7 +6,7 @@
   "description": "CV / resume builder with numerous print-ready templates, guided editing, import from existing CVs, and PDF + Word export.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/make-artifact-page.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false",
     "test": "vitest run",

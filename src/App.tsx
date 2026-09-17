@@ -6,6 +6,7 @@ import { DesignPanel } from './components/DesignPanel';
 import { ReviewPanel } from './components/ReviewPanel';
 import { PlaybookPanel } from './components/PlaybookPanel';
 import { ImportDialog } from './components/ImportDialog';
+import { DialogHost } from './components/dialogs';
 import { Preview } from './components/Preview';
 import { ResumeDocument } from './templates/ResumeDocument';
 import { useResume, useStore } from './state/store';
@@ -86,6 +87,8 @@ export function App() {
       </div>
 
       {importOpen ? <ImportDialog onClose={() => setImportOpen(false)} /> : null}
+
+      <DialogHost />
 
       {/* Rendered off-screen and revealed only by the print stylesheet, so the
           printed PDF is the document itself rather than a screenshot of the app. */}

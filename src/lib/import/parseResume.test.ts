@@ -3,6 +3,7 @@ import {
   detectSectionHeading,
   extractContacts,
   extractName,
+  joinWrappedLines,
   parseHeader,
   parseResumeText,
   splitEntries,
@@ -141,6 +142,79 @@ describe('parseHeader', () => {
     const h = parseHeader(['Analyst', '03/2019 - 11/2021']);
     expect(h.startDate).toBe('Mar 2019');
     expect(h.endDate).toBe('Nov 2021');
+  });
+});
+
+/**
+ * What a CV looks like after PDF text extraction: no bullet markers at all
+ * (list markers are drawn, not written, so they are not in the text layer) and
+ * every bullet hard-wrapped across the lines it occupied on the page.
+ */
+const PDF_STYLE = `EXPERIENCE
+Senior Product Manager, Checkout Mar 2021 – Present
+Northwind Payments · London, UK
+Own the checkout and payment-methods roadmap for 2.4M monthly transactions.
+Led migration to a modular checkout platform, reducing payment failure rate from 5.1% to 3.4% and
+recovering £12M in annualised revenue.
+Launched local payment methods in 6 European markets in 9 months, growing non-card volume from 8% to
+27% of transactions.
+Product Manager, Growth Jun 2018 – Feb 2021
+Orbit Marketplace · Manchester, UK
+Redesigned seller onboarding, lifting activation from 41% to 63% and adding 4,800 active sellers in the first
+year.
+
+EDUCATION
+BSc (Hons), Economics and Computer Science 2013 – 2016
+University of Manchester · Manchester, UK
+First Class Honours
+`;
+
+describe('joinWrappedLines', () => {
+  it('rejoins a bullet split across two lines', () => {
+    expect(
+      joinWrappedLines(['Led migration to a modular platform and', 'recovered £12M in revenue.']),
+    ).toEqual(['Led migration to a modular platform and recovered £12M in revenue.']);
+  });
+
+  it('keeps an employer line separate from the job title above it', () => {
+    expect(
+      joinWrappedLines(['Senior Product Manager, Checkout Mar 2021 – Present', 'Northwind Payments · London, UK']),
+    ).toHaveLength(2);
+  });
+
+  it('never joins across a section heading', () => {
+    expect(joinWrappedLines(['worked on the platform and', 'EDUCATION'])).toHaveLength(2);
+  });
+});
+
+describe('parseResumeText on PDF-style text with no bullet markers', () => {
+  const { resume } = parseResumeText(PDF_STYLE);
+
+  it('does not split one role into several', () => {
+    expect(resume.experience).toHaveLength(2);
+    expect(resume.experience[0].position).toBe('Senior Product Manager, Checkout');
+    expect(resume.experience[0].company).toContain('Northwind Payments');
+    expect(resume.experience[0].startDate).toBe('Mar 2021');
+    expect(resume.experience[0].current).toBe(true);
+  });
+
+  it('recovers the bullets despite the missing markers', () => {
+    const [first, second] = resume.experience;
+    expect(first.highlights).toHaveLength(3);
+    expect(second.highlights).toHaveLength(1);
+  });
+
+  it('reassembles bullets that were wrapped mid-sentence', () => {
+    const highlights = resume.experience[0].highlights;
+    expect(highlights.some((h) => h.endsWith('recovering £12M in annualised revenue.'))).toBe(true);
+    expect(highlights.some((h) => h.endsWith('from 8% to 27% of transactions.'))).toBe(true);
+    expect(resume.experience[1].highlights[0]).toContain('in the first year.');
+  });
+
+  it('still reads education correctly', () => {
+    expect(resume.education).toHaveLength(1);
+    expect(resume.education[0].institution).toContain('University of Manchester');
+    expect(resume.education[0].grade).toContain('First Class');
   });
 });
 

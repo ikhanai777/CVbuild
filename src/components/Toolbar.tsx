@@ -4,6 +4,7 @@ import { downloadDocx } from '../lib/export/docx';
 import { downloadJson } from '../lib/export/json';
 import { printResume } from '../lib/export/print';
 import { scoreResume } from '../lib/analysis/score';
+import { askConfirm, askNotice, askText } from './dialogs';
 
 function useOutsideClose(onClose: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +36,7 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
     try {
       await downloadDocx(resume);
     } catch (e) {
-      alert(`The Word file could not be generated: ${e instanceof Error ? e.message : e}`);
+      void askNotice(`The Word file could not be generated: ${e instanceof Error ? e.message : e}`);
     } finally {
       setBusy('');
       setExportOpen(false);
@@ -82,8 +83,9 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
               <button
                 type="button"
                 className="menu__item"
-                onClick={() => {
-                  const name = prompt('Name this CV', resume.meta.name);
+                onClick={async () => {
+                  setDocsOpen(false);
+                  const name = await askText('Name this CV', resume.meta.name);
                   if (name) store.setMeta({ name });
                 }}
               >
@@ -113,10 +115,10 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
                 type="button"
                 className="menu__item menu__item--danger"
                 disabled={resumes.length <= 1}
-                onClick={() => {
-                  if (confirm(`Delete "${resume.meta.name}"? This can be undone with Ctrl+Z.`)) {
+                onClick={async () => {
+                  setDocsOpen(false);
+                  if (await askConfirm(`Delete "${resume.meta.name}"? This can be undone with Ctrl+Z.`)) {
                     store.deleteResume(resume.meta.id);
-                    setDocsOpen(false);
                   }
                 }}
               >

@@ -3,6 +3,7 @@ import { ACCENT_PRESETS, FONT_OPTIONS, getTemplate } from '../templates/registry
 import { SECTION_LABELS, type SectionId, type SectionKey } from '../types/resume';
 import { orderedSectionIds, sectionTitle } from '../templates/Sections';
 import { Checkbox, Field } from './fields';
+import { askText } from './dialogs';
 import { estimatePages } from '../lib/analysis/score';
 
 function Slider({
@@ -216,8 +217,8 @@ export function DesignPanel() {
                     type="button"
                     className="icon-btn"
                     title="Rename heading"
-                    onClick={() => {
-                      const next = prompt(`Heading for "${label}"`, sectionTitle(resume, id));
+                    onClick={async () => {
+                      const next = await askText(`Heading for "${label}"`, sectionTitle(resume, id));
                       if (next !== null) store.renameSection(id, next);
                     }}
                   >

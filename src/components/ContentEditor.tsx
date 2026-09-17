@@ -9,6 +9,7 @@ import {
   TagInput,
   TextInput,
 } from './fields';
+import { askConfirm, askNotice, askText } from './dialogs';
 import { SUMMARY_TEMPLATES } from '../data/playbook';
 import { hasMetric, wordCount } from '../lib/analysis/language';
 import { dateRange } from '../lib/format';
@@ -72,7 +73,9 @@ function PhotoField() {
             const file = e.target.files?.[0];
             if (!file) return;
             if (file.size > 1_500_000) {
-              alert('Please use an image under 1.5MB — larger photos bloat the PDF and the browser store.');
+              void askNotice(
+                'Please use an image under 1.5MB — larger photos bloat the PDF and can overflow the browser store.',
+              );
               return;
             }
             const reader = new FileReader();
@@ -810,8 +813,10 @@ export function ContentEditor() {
             <button
               type="button"
               className="btn btn--ghost btn--sm"
-              onClick={() => {
-                if (confirm(`Delete the "${section.title}" section?`)) store.removeCustomSection(section.id);
+              onClick={async () => {
+                if (await askConfirm(`Delete the "${section.title}" section?`)) {
+                  store.removeCustomSection(section.id);
+                }
               }}
             >
               Delete section
@@ -874,8 +879,8 @@ export function ContentEditor() {
       <button
         type="button"
         className="btn btn--dashed btn--block"
-        onClick={() => {
-          const title = prompt('Section heading', 'Additional information');
+        onClick={async () => {
+          const title = await askText('Section heading', 'Additional information');
           if (title) store.addCustomSection(title);
         }}
       >

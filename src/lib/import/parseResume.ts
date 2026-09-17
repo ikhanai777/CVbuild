@@ -244,6 +244,50 @@ function stripBullet(line: string): string {
   return line.replace(BULLET_RE, '').trim();
 }
 
+/** Sentence-ending punctuation — a line ending here is complete. */
+const TERMINAL_RE = /[.!?:;]$/;
+
+/** A line ending here is mid-thought and expects the next line to finish it. */
+const CONTINUES_RE = /([·•,&/+–—-]|\b(and|or|to|of|in|for|with|the|a|an|by|from|at|on|that|than))$/i;
+
+/**
+ * Re-joins lines that a hard wrap split apart.
+ *
+ * Text extracted from a PDF has no paragraphs — every visual line is its own
+ * line, so one bullet arrives as two or three fragments. Without this, each
+ * fragment is read as a separate item and a three-bullet role comes back with
+ * six half-sentences.
+ *
+ * A line is only joined onto the previous one when it cannot be starting
+ * something new: it begins mid-sentence, or the previous line ended on a
+ * connector. A line carrying dates, a bullet marker or a section heading always
+ * stands on its own, as does anything following a line that already ended in a
+ * date — that is an entry header, and the line under it is the employer.
+ */
+export function joinWrappedLines(lines: string[]): string[] {
+  const out: string[] = [];
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) {
+      out.push('');
+      continue;
+    }
+    const prev = out.length ? out[out.length - 1] : '';
+    const joinable =
+      !!prev &&
+      !isBullet(line) &&
+      !DATE_RANGE_RE.test(line) &&
+      !detectSectionHeading(line) &&
+      !DATE_RANGE_RE.test(prev) &&
+      !TERMINAL_RE.test(prev) &&
+      (/^[a-z0-9£$€%(]/.test(line) || CONTINUES_RE.test(prev));
+
+    if (joinable) out[out.length - 1] = `${prev} ${line}`;
+    else out.push(line);
+  }
+  return out;
+}
+
 /**
  * Splits a section's lines into entries. A line carrying a date range starts a
  * new entry; so does a non-bullet line that directly follows bullets.
@@ -279,8 +323,12 @@ export function splitEntries(lines: string[]): RawEntry[] {
     }
     if (!current) current = { headerLines: [], bullets: [] };
 
-    // A long sentence after a header is prose, not another header line.
-    if (current.headerLines.length && line.split(/\s+/).length > 16) {
+    // Prose following a header line is an achievement that lost its bullet
+    // marker. PDF text extraction discards list markers entirely — they are
+    // drawn, not written — so for a PDF-sourced CV this is the only thing that
+    // tells a bullet apart from a second header line.
+    const prose = /[.!?]$/.test(line) || line.split(/\s+/).length > 12;
+    if (current.headerLines.length && prose) {
       current.bullets.push(line);
     } else {
       current.headerLines.push(line);
@@ -462,7 +510,9 @@ export function parseResumeText(text: string, name = 'Imported CV'): ParseResult
 
   /* per-section parsing */
   for (const block of blocks) {
-    const body = block.lines.filter((l) => l.trim());
+    // Re-join hard-wrapped lines before anything reads them. Only inside a
+    // section: in the preamble it would glue the name onto the contact line.
+    const body = joinWrappedLines(block.lines).filter((l) => l.trim());
     if (!body.length) continue;
 
     switch (block.key) {
