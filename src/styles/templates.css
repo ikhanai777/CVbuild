@@ -929,3 +929,422 @@
 .tpl-muse .cv-bullets li::marker {
   color: var(--cv-accent);
 }
+
+/* 23. Onyx — a solid dark rail bled to the page edges, full height. ------ */
+/* The page becomes a flex column so the body can claim the remaining height
+   and the rail can stretch to the bottom edge rather than stopping under its
+   own content. */
+.tpl-onyx {
+  display: flex;
+  flex-direction: column;
+}
+.tpl-onyx .cv-body--sidebar-left {
+  flex: 1;
+  align-items: stretch;
+  gap: 0;
+}
+.tpl-onyx .cv-side {
+  background: var(--cv-accent);
+  color: #eef1f6;
+  /* Negative margins cancel the page padding on three sides so the panel
+     reaches the trimmed edge of the sheet. */
+  margin: 0 0 calc(var(--cv-margin) * -1) calc(var(--cv-margin) * -1);
+  padding: 1mm var(--cv-margin) var(--cv-margin) var(--cv-margin);
+  width: calc(var(--cv-sidebar-width) + var(--cv-margin));
+}
+.tpl-onyx .cv-main {
+  padding-left: 8mm;
+}
+.tpl-onyx .cv-side .cv-section__title {
+  color: #fff;
+  border-bottom: 0.6px solid rgba(238, 241, 246, 0.35);
+  padding-bottom: 0.25em;
+}
+.tpl-onyx .cv-side .cv-entry__subtitle,
+.tpl-onyx .cv-side .cv-entry__meta,
+.tpl-onyx .cv-side .cv-entry__summary,
+.tpl-onyx .cv-side .cv-list__sub,
+.tpl-onyx .cv-side .cv-list__meta,
+.tpl-onyx .cv-side .cv-inline-list {
+  color: #b9c2d0;
+}
+.tpl-onyx .cv-side .cv-skill + .cv-skill::before {
+  color: rgba(238, 241, 246, 0.4);
+}
+.tpl-onyx .cv-header--split {
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 3mm;
+  margin-bottom: 5mm;
+}
+.tpl-onyx .cv-name {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-size: 2.3em;
+}
+.tpl-onyx .cv-main .cv-section__title {
+  letter-spacing: 0.14em;
+}
+.tpl-onyx .cv-photo img {
+  border-radius: 50%;
+}
+
+/* 24. Aurora — full-bleed gradient banner, rounded pills. ---------------- */
+.tpl-aurora .cv-header--band {
+  /* A white sheen over the accent, so the gradient follows whatever colour
+     the user picks instead of being baked to one hue. */
+  background-image: linear-gradient(115deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.3) 100%);
+  padding: 11mm 14mm;
+}
+.tpl-aurora .cv-name {
+  font-size: 2.35em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.tpl-aurora .cv-headline {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.76em;
+  margin-top: 0.6em;
+}
+.tpl-aurora .cv-header--band .cv-photo img {
+  border-radius: 4mm;
+  border: 0.8mm solid rgba(255, 255, 255, 0.4);
+}
+.tpl-aurora .cv-section__title {
+  color: var(--cv-accent);
+  letter-spacing: 0.13em;
+}
+.tpl-aurora .cv-skill {
+  display: inline-block;
+  background: var(--cv-accent-soft);
+  color: var(--cv-accent);
+  border-radius: 999px;
+  padding: 0.1em 0.7em;
+  margin: 0 0.3em 0.35em 0;
+  font-size: 0.88em;
+  font-weight: 600;
+}
+.tpl-aurora .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-aurora .cv-entry__dates {
+  background: var(--cv-accent-soft);
+  color: var(--cv-accent);
+  border-radius: 999px;
+  padding: 0.08em 0.6em;
+  font-weight: 600;
+  font-size: 0.78em;
+}
+
+/* 25. Bauhaus — heavy geometry, thick bars, square bullets. -------------- */
+.tpl-bauhaus .cv-header--bold-left {
+  position: relative;
+  padding-bottom: 5mm;
+  border-bottom: 2.5mm solid var(--cv-accent);
+  align-items: flex-end;
+}
+.tpl-bauhaus .cv-name {
+  font-size: 2.9em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  max-width: 100%;
+}
+/* The circle-and-square pair is the whole motif; it sits between the name
+   and the contact block rather than floating as decoration. */
+.tpl-bauhaus .cv-header--bold-left .cv-header__right {
+  position: relative;
+  padding-top: 12mm;
+}
+.tpl-bauhaus .cv-header--bold-left .cv-header__right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 9mm;
+  width: 7mm;
+  height: 7mm;
+  border-radius: 50%;
+  background: var(--cv-accent);
+}
+.tpl-bauhaus .cv-header--bold-left .cv-header__right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 7mm;
+  height: 7mm;
+  background: var(--cv-text);
+}
+.tpl-bauhaus .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  font-size: 0.78em;
+}
+.tpl-bauhaus .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.tpl-bauhaus .cv-section__title::before {
+  content: '';
+  width: 9mm;
+  height: 2.2mm;
+  background: var(--cv-accent);
+  flex: none;
+}
+.tpl-bauhaus .cv-entry__title {
+  font-weight: 800;
+}
+.tpl-bauhaus .cv-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+.tpl-bauhaus .cv-bullets li {
+  position: relative;
+  padding-left: 5mm;
+}
+.tpl-bauhaus .cv-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.48em;
+  width: 2mm;
+  height: 2mm;
+  background: var(--cv-accent);
+}
+
+/* 26. Broadsheet — masthead rule, justified serif, drop cap. ------------- */
+.tpl-broadsheet {
+  --cv-base-size: 10.4pt;
+}
+.tpl-broadsheet .cv-name {
+  font-size: 2.4em;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tpl-broadsheet .cv-header--centered {
+  border-bottom: 3px double var(--cv-accent);
+  padding-bottom: 2.5mm;
+}
+.tpl-broadsheet .cv-headline {
+  font-style: italic;
+  letter-spacing: 0.06em;
+  margin-top: 0.4em;
+}
+.tpl-broadsheet .cv-section__title {
+  border-top: 1.4pt solid var(--cv-accent);
+  border-bottom: 0.5pt solid var(--cv-accent);
+  padding: 0.22em 0;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  font-size: 0.82em;
+}
+.tpl-broadsheet .cv-summary,
+.tpl-broadsheet .cv-entry__summary {
+  text-align: justify;
+  hyphens: auto;
+}
+/* Purely a rendering effect — ::first-letter changes no text, so the summary
+   still extracts as an ordinary paragraph. */
+.tpl-broadsheet .cv-section--summary .cv-summary::first-letter {
+  float: left;
+  font-size: 3.1em;
+  line-height: 0.82;
+  font-weight: 700;
+  padding: 0.05em 0.12em 0 0;
+  color: var(--cv-accent);
+}
+.tpl-broadsheet .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-broadsheet .cv-entry__subtitle {
+  font-style: italic;
+}
+
+/* 27. Kyoto — one hairline the height of the page, very large margins. --- */
+.tpl-kyoto {
+  --cv-base-size: 10pt;
+}
+.tpl-kyoto::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--cv-margin) * 0.42);
+  top: var(--cv-margin);
+  bottom: var(--cv-margin);
+  width: 0.7px;
+  background: var(--cv-accent-line);
+}
+.tpl-kyoto .cv-name {
+  font-weight: 300;
+  font-size: 2.05em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.tpl-kyoto .cv-headline {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.72em;
+  margin-top: 0.8em;
+}
+.tpl-kyoto .cv-header--stacked {
+  padding-bottom: 3mm;
+}
+.tpl-kyoto .cv-section__title {
+  font-weight: 400;
+  font-size: 0.76em;
+  letter-spacing: 0.3em;
+  color: var(--cv-accent);
+  margin-bottom: 1.1em;
+}
+.tpl-kyoto .cv-entry__title {
+  font-weight: 600;
+}
+.tpl-kyoto .cv-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+.tpl-kyoto .cv-bullets li {
+  position: relative;
+  padding-left: 4mm;
+}
+.tpl-kyoto .cv-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.68em;
+  width: 1.6mm;
+  height: 0.7px;
+  background: var(--cv-accent);
+}
+
+/* 28. Atelier — a double-ruled title block over a Garamond body. --------- */
+.tpl-atelier {
+  --cv-base-size: 10.8pt;
+  background-color: #fdfdfb;
+}
+.tpl-atelier .cv-header--centered {
+  border: 0.7px solid var(--cv-accent-line);
+  outline: 2.4px solid var(--cv-accent-line);
+  outline-offset: 1.6mm;
+  padding: 6mm 5mm;
+  margin: 1.6mm 1.6mm 3mm;
+}
+.tpl-atelier .cv-name {
+  font-size: 2.3em;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-indent: 0.16em;
+}
+.tpl-atelier .cv-headline {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.68em;
+  margin-top: 0.9em;
+  text-indent: 0.22em;
+}
+.tpl-atelier .cv-section__title {
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  font-size: 0.8em;
+  margin-bottom: 0.8em;
+}
+.tpl-atelier .cv-section__title::after {
+  content: '';
+  display: block;
+  width: 12mm;
+  height: 0.7px;
+  background: var(--cv-accent);
+  margin: 0.5em auto 0;
+}
+.tpl-atelier .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-atelier .cv-entry__subtitle {
+  font-style: italic;
+}
+
+/* 29. Marina — every section in a soft rounded panel. -------------------- */
+.tpl-marina .cv-section__body {
+  background: var(--cv-accent-soft);
+  border-radius: 3mm;
+  padding: 3.5mm 5mm;
+}
+.tpl-marina .cv-section__title {
+  color: var(--cv-accent);
+  letter-spacing: 0.12em;
+  font-size: 0.84em;
+  margin-bottom: 0.4em;
+  padding-left: 1mm;
+}
+.tpl-marina .cv-header--split {
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 3mm;
+}
+.tpl-marina .cv-name {
+  color: var(--cv-accent);
+  font-weight: 700;
+}
+.tpl-marina .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-marina .cv-entry:first-child {
+  margin-top: 0;
+}
+.tpl-marina .cv-bullets li::marker {
+  color: var(--cv-accent);
+}
+.tpl-marina .cv-photo img {
+  border-radius: 3mm;
+}
+
+/* 30. Midnight — the page inverted. -------------------------------------- */
+/* Redefining the base tokens flips every component at once, rather than
+   re-colouring each one and missing something. */
+.tpl-midnight {
+  --cv-text: #e8eaf0;
+  --cv-muted: #9aa3b2;
+  --cv-rule: #333a46;
+  background-color: #12141a;
+}
+.tpl-midnight .cv-name {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.tpl-midnight .cv-header--split {
+  border-bottom: 0.8px solid var(--cv-rule);
+  padding-bottom: 3mm;
+}
+.tpl-midnight .cv-section__title {
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  gap: 2.5mm;
+}
+.tpl-midnight .cv-section__title::after {
+  content: '';
+  flex: 1;
+  height: 0.7px;
+  background: var(--cv-rule);
+}
+.tpl-midnight .cv-skill {
+  display: inline-block;
+  border: 0.7px solid var(--cv-rule);
+  border-radius: 2px;
+  padding: 0.05em 0.45em;
+  margin: 0 0.3em 0.3em 0;
+  font-size: 0.88em;
+}
+.tpl-midnight .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-midnight .cv-photo img {
+  border-radius: 50%;
+  border: 0.6mm solid var(--cv-rule);
+}

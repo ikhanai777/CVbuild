@@ -364,6 +364,8 @@ p {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  /* Without this the panel cannot shrink below its content's intrinsic width. */
+  min-width: 0;
   background: var(--surface);
   border-right: 1px solid var(--border);
 }
@@ -1309,6 +1311,8 @@ select.input {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  /* Same reason as .panel — otherwise the 794px page sets the app's width. */
+  min-width: 0;
   background: #e9ebef;
 }
 
@@ -1337,6 +1341,7 @@ select.input {
 
 .preview__frame {
   flex: 1;
+  min-width: 0;
   overflow: auto;
   padding: 22px;
   display: flex;
@@ -1344,10 +1349,16 @@ select.input {
   align-items: flex-start;
 }
 
-.preview__scaler {
-  transform-origin: top center;
+.preview__sizer {
   position: relative;
   flex: none;
+}
+
+.preview__scaler {
+  transform-origin: top left;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .page-break {
@@ -1517,6 +1528,43 @@ select.input {
   font-size: 13px;
 }
 
+/* ---------------------------------------------------------------------------
+   Responsive.
+
+   Three steps. Above 1100px the editor and the page sit side by side. Between
+   900 and 1100 they stack, since neither is wide enough beside the other. Below
+   900 there is not room for both at all, so they become a switch (see
+   .mobile-switch) and the chrome condenses to leave the content the screen.
+--------------------------------------------------------------------------- */
+
+/* The Edit/Preview switch, shown only once the panes stop sharing the screen. */
+.mobile-switch {
+  display: none;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.mobile-switch__btn {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.mobile-switch__btn--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
 @media (max-width: 1100px) {
   .app__body {
     grid-template-columns: 1fr;
@@ -1527,5 +1575,176 @@ select.input {
   }
   .import-review__preview {
     display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .mobile-switch {
+    display: flex;
+  }
+
+  /* One pane at a time, each taking the whole remaining height. */
+  .app__body {
+    grid-template-rows: 1fr;
+  }
+  .app__body[data-mobile-view='edit'] .preview,
+  .app__body[data-mobile-view='preview'] .panel {
+    display: none;
+  }
+
+  .panel {
+    border-right: 0;
+  }
+
+  /* Toolbar: keep the document name and the actions, drop the decoration. */
+  .toolbar {
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .toolbar__tagline,
+  .toolbar__score .muted,
+  .toolbar__brand strong {
+    display: none;
+  }
+  .toolbar__brand {
+    gap: 7px;
+  }
+  /* The actions need the first row; the document name gets its own full-width
+     row underneath rather than being squeezed to an ellipsis between them. */
+  .toolbar__docs {
+    order: 9;
+    flex: 1 0 100%;
+  }
+  .toolbar__docs > .btn {
+    width: 100%;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+  .toolbar__spacer {
+    display: none;
+  }
+  .toolbar__score {
+    border-right: 0;
+    padding-right: 0;
+    margin-right: 0;
+  }
+
+  /* Menus must never be wider than the screen they drop onto. */
+  .menu,
+  .menu--right {
+    min-width: 0;
+    width: min(340px, calc(100vw - 20px));
+    max-width: calc(100vw - 20px);
+  }
+
+  /* Five tabs do not fit; let them scroll rather than wrap into two rows. */
+  .tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab {
+    white-space: nowrap;
+    padding: 8px 10px;
+  }
+
+  .panel__scroll {
+    padding: 10px;
+  }
+  .panel-block {
+    padding: 11px;
+  }
+
+  /* Paired fields are unreadable at half of a phone's width. */
+  .grid--2 {
+    grid-template-columns: 1fr;
+  }
+  .row--gap {
+    flex-wrap: wrap;
+  }
+
+  .score-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .score-head__stats {
+    width: 100%;
+  }
+
+  .gallery__grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .tpl-card__preview {
+    height: 150px;
+  }
+  .tpl-card__scaler {
+    transform: scale(0.2);
+    margin-left: -79px; /* half of A4 width at 0.2 scale */
+  }
+
+  .ba {
+    grid-template-columns: 1fr;
+  }
+
+  .preview__frame {
+    padding: 12px;
+  }
+  .preview__bar {
+    padding: 6px 10px;
+  }
+
+  .modal-backdrop {
+    padding: 0;
+    align-items: stretch;
+  }
+  .modal,
+  .modal--wide {
+    width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+  .modal--ask {
+    width: 100%;
+    margin: auto;
+    max-height: none;
+    border-radius: var(--radius);
+  }
+  .modal-backdrop:has(.modal--ask) {
+    padding: 16px;
+    align-items: center;
+  }
+  .modal__foot {
+    flex-wrap: wrap;
+  }
+  .modal__foot .btn {
+    flex: 1;
+  }
+}
+
+/* Touch targets: a 26px icon button is fine for a mouse and too small for a
+   thumb. Only grown where the pointer is actually coarse. */
+@media (pointer: coarse) {
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .btn {
+    padding: 9px 14px;
+  }
+  .btn--sm {
+    padding: 6px 11px;
+  }
+  .tag button {
+    padding: 2px 6px;
+    font-size: 16px;
   }
 }

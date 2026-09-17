@@ -16,10 +16,13 @@ export function Preview() {
   const [zoom, setZoom] = useState(0.8);
   const [autoFit, setAutoFit] = useState(true);
   const [pages, setPages] = useState(1);
+  /** Unscaled height of the rendered document, used to size the scroll area. */
+  const [naturalHeight, setNaturalHeight] = useState(0);
   const frameRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
 
   const pageHeightPx = PAGE_HEIGHT_MM[resume.settings.paperSize] * MM_TO_PX;
+  const pageWidthPx = (resume.settings.paperSize === 'A4' ? 210 : 215.9) * MM_TO_PX;
 
   // Fit-to-width keeps the whole page visible as the window resizes.
   useEffect(() => {
@@ -27,15 +30,21 @@ export function Preview() {
     const frame = frameRef.current;
     if (!frame) return;
     const fit = () => {
-      const available = frame.clientWidth - 48;
-      const pageWidth = (resume.settings.paperSize === 'A4' ? 210 : 215.9) * MM_TO_PX;
-      setZoom(Math.max(0.35, Math.min(1.2, available / pageWidth)));
+      // Read the real padding rather than assuming it — the frame's gutter
+      // shrinks on narrow screens, and a stale constant would under-fill the
+      // page or overflow it on a phone.
+      const style = getComputedStyle(frame);
+      const gutter = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const available = frame.clientWidth - gutter;
+      // A hidden pane measures zero; keep the last sensible zoom until it shows.
+      if (available <= 0) return;
+      setZoom(Math.max(0.2, Math.min(1.2, available / pageWidthPx)));
     };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(frame);
     return () => observer.disconnect();
-  }, [autoFit, resume.settings.paperSize]);
+  }, [autoFit, pageWidthPx]);
 
   // Count how many printed pages the content currently spills onto.
   useLayoutEffect(() => {
@@ -43,6 +52,7 @@ export function Preview() {
     if (!el) return;
     const measure = () => {
       const height = el.getBoundingClientRect().height / zoom;
+      setNaturalHeight(height);
       setPages(Math.max(1, Math.ceil(height / pageHeightPx - 0.02)));
     };
     measure();
@@ -92,20 +102,33 @@ export function Preview() {
       </div>
 
       <div className="preview__frame" ref={frameRef}>
-        <div className="preview__scaler" style={{ transform: `scale(${zoom})` }} ref={pageRef}>
-          <ResumeDocument resume={resume} />
-          {pages > 1
-            ? Array.from({ length: pages - 1 }, (_, i) => (
-                <div
-                  className="page-break"
-                  key={i}
-                  style={{ top: `${(i + 1) * pageHeightPx}px` }}
-                  aria-hidden="true"
-                >
-                  <span>page {i + 2}</span>
-                </div>
-              ))
-            : null}
+        {/* A CSS transform scales what you see but not the space the element
+            takes up, so a zoomed-out page would still reserve its full size and
+            leave the frame scrolling over empty room — badly wrong on a phone.
+            The sizer carries the scaled dimensions so the scroll area matches
+            what is actually drawn. */}
+        <div
+          className="preview__sizer"
+          style={{
+            width: `${pageWidthPx * zoom}px`,
+            height: naturalHeight ? `${naturalHeight * zoom}px` : undefined,
+          }}
+        >
+          <div className="preview__scaler" style={{ transform: `scale(${zoom})` }} ref={pageRef}>
+            <ResumeDocument resume={resume} />
+            {pages > 1
+              ? Array.from({ length: pages - 1 }, (_, i) => (
+                  <div
+                    className="page-break"
+                    key={i}
+                    style={{ top: `${(i + 1) * pageHeightPx}px` }}
+                    aria-hidden="true"
+                  >
+                    <span>page {i + 2}</span>
+                  </div>
+                ))
+              : null}
+          </div>
         </div>
       </div>
     </div>

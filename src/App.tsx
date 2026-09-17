@@ -29,6 +29,8 @@ export function App() {
   const redo = useStore((s) => s.redo);
   const [tab, setTab] = useState<Tab>('content');
   const [importOpen, setImportOpen] = useState(false);
+  /** Only consulted below the mobile breakpoint; ignored by the CSS above it. */
+  const [mobileView, setMobileView] = useState<'edit' | 'preview'>('edit');
 
   const issueCount = scoreResume(resume).issues.filter((i) => i.severity !== 'suggestion').length;
 
@@ -56,7 +58,24 @@ export function App() {
     <div className="app">
       <Toolbar onImport={() => setImportOpen(true)} />
 
-      <div className="app__body">
+      {/* A phone cannot show the editor and a full-size page side by side, so
+          below the breakpoint the two panes become a switch. The control is
+          hidden by CSS on wider screens, where both panes are visible. */}
+      <div className="mobile-switch" role="group" aria-label="Show editor or preview">
+        {(['edit', 'preview'] as const).map((view) => (
+          <button
+            key={view}
+            type="button"
+            className={`mobile-switch__btn${mobileView === view ? ' mobile-switch__btn--active' : ''}`}
+            aria-pressed={mobileView === view}
+            onClick={() => setMobileView(view)}
+          >
+            {view === 'edit' ? 'Edit' : 'Preview'}
+          </button>
+        ))}
+      </div>
+
+      <div className="app__body" data-mobile-view={mobileView}>
         <section className="panel">
           <nav className="tabs" role="tablist">
             {TABS.map((t) => (

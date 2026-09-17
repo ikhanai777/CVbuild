@@ -1,6 +1,6 @@
 # CVBuild
 
-A CV / resume builder with 22 print-ready templates, a writing coach built from
+A CV / resume builder with 30 print-ready templates, a writing coach built from
 recruiter-side guidance, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
@@ -45,7 +45,7 @@ something new, then treats prose following an entry header as a bullet that lost
 its marker. Without that, a three-role CV imports as six half-sentences spread
 over five jobs.
 
-### 22 templates
+### 30 templates
 
 Each is a genuinely different layout, not a colour swap. Every template renders
 the same content model, so switching never costs you a retype.
@@ -55,20 +55,28 @@ the same content model, so switching never costs you a retype.
 | **ATS & classic** | ATS Classic | Single column, system fonts, no graphics | ✅ |
 | | Harvard Serif | Centred serif, rule-under-heading | ✅ |
 | | Compact One-Page | Tight leading for long careers | ✅ |
+| | Broadsheet | Masthead rule, justified serif, drop cap | ✅ |
 | **Modern professional** | Modern Professional | Accent rules, generous spacing | ✅ |
 | | Executive Brief | Small caps, summary-led | ✅ |
 | | Minimal Swiss | Heading rail, hairline rules | ✅ |
 | | Engineering Standard | Stack under the summary, projects above education | ✅ |
 | | Ivory | Warm paper, serif display over a sans body | ✅ |
 | | Muse | Centred and light, headings between hairlines | ✅ |
+| | Kyoto | One hairline down the page, very large margins | ✅ |
+| | Marina | Every section in a soft rounded panel | ✅ |
 | **Two-column** | Two-Column Classic | Tinted left rail | ✖ |
 | | Elegant Sidebar | Serif body, tinted right rail | ✖ |
 | | Tech Matrix | Dark rail, monospaced labels | ✖ |
 | | Portfolio Rail | Portrait left, contact strip, dotted timeline | ✖ |
+| | Onyx | Dark rail bled to the page edges, full height | ✖ |
 | **Creative** | Creative Band | Full-bleed colour header, optional photo | ✖ |
 | | Studio Split | Heavy name block, ruled contacts, right rail | ✖ |
 | | Editorial | Wide tracking, hairlines, a great deal of air | ✖ |
 | | Couture | Very wide capitals, full-height column rule | ✖ |
+| | Aurora | Full-bleed gradient banner, rounded pills | ✖ |
+| | Bauhaus | Circle-and-square motif, thick bars, square bullets | ✖ |
+| | Atelier | Double-ruled title block over a Garamond body | ✖ |
+| | Midnight | The whole page inverted, pale type on near-black | ✖ |
 | | Monogram Modern | Initials tile, tinted heading strips | ✖ |
 | | Career Timeline | Dated markers down the main column | ✖ |
 | **Specialist** | Academic CV | Education and publications first, multi-page | ✅ |
@@ -103,6 +111,17 @@ is how most people will use them. **Ivory** and **Muse** carry the same
 aesthetic into single-column layouts that stay portal-safe — Ivory pairs a serif
 display face with a sans body on warm paper, Muse centres everything and sets
 each heading between two hairlines.
+
+The eight strongest themes each commit to one idea rather than hedging.
+**Onyx** bleeds a solid dark rail to the trimmed edge of the sheet and runs it
+the full height. **Aurora** puts a gradient banner over rounded pills.
+**Bauhaus** sets a circle and a square against the name and marks every heading
+with a thick bar. **Broadsheet** is a newspaper — masthead rule, justified
+serif, a drop cap opening the summary (styling only, so it stays ATS-safe).
+**Kyoto** hangs everything off a single hairline and spends the rest on margin.
+**Atelier** frames the name in a double rule like headed stationery.
+**Marina** puts each section in a soft rounded panel. **Midnight** inverts the
+whole page — excellent as a PDF, expensive to print, and the description says so.
 
 ### The writing coach
 
@@ -155,6 +174,16 @@ tailoring per application, and what loses applications.
 The preview renders at true physical size (A4 or US Letter) with dashed guides
 showing where each printed page will break.
 
+### On a phone
+
+The editor and a true-to-size A4 page cannot share a phone screen, so below
+900px they become an **Edit / Preview** switch instead of two panes, and the
+chrome condenses around it: paired fields go to one column, the tab strip
+scrolls rather than wrapping, menus and dialogs are capped to the viewport, the
+document name takes its own full-width row, and touch targets grow wherever the
+pointer is actually coarse. Verified at 360, 375, 390 and 820px with no
+horizontal scrolling at any of them.
+
 ### Multiple CVs
 
 Keep one master CV and a tailored copy per application — duplicate, rename and
@@ -170,7 +199,7 @@ src/
   types/resume.ts            The document model everything reads and writes
   state/store.ts             Zustand store, localStorage persistence, undo/redo
   templates/
-    registry.ts              The 22 template definitions and their defaults
+    registry.ts              The 30 template definitions and their defaults
     applyTemplate.ts         Template switching, incl. the section-preset loan
     ResumeDocument.tsx       Layout engines + header variants
     Sections.tsx             Section renderers shared by every template
@@ -217,7 +246,7 @@ npm test
 
 52 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, Word generation for all 22 templates, and JSON round-tripping.
+switching, Word generation for all 30 templates, and JSON round-tripping.
 
 ## Notes and limits
 
