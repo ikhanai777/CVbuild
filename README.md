@@ -1,6 +1,6 @@
 # CVBuild
 
-A CV / resume builder with 19 print-ready templates, a writing coach built from
+A CV / resume builder with 15 print-ready templates, a writing coach built from
 recruiter-side guidance, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
@@ -11,7 +11,7 @@ data leaves the machine.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 58 tests
+npm test         # 50 tests
 npm run build
 ```
 
@@ -45,7 +45,7 @@ something new, then treats prose following an entry header as a bullet that lost
 its marker. Without that, a three-role CV imports as six half-sentences spread
 over five jobs.
 
-### 19 templates
+### 15 templates
 
 Each is a genuinely different layout, not a colour swap. Every template renders
 the same content model, so switching never costs you a retype.
@@ -60,24 +60,13 @@ the same content model, so switching never costs you a retype.
 | | Minimal Swiss | Heading rail, hairline rules | ✅ |
 | **Two-column** | Two-Column Classic | Tinted left rail | ✖ |
 | | Elegant Sidebar | Serif body, tinted right rail | ✖ |
-| **Engineering** | Tech Matrix | Dark sidebar, monospaced skills matrix | ✖ |
-| | Terminal | Terminal-window header, shell-prompt bullets | ✖ |
-| | Systems Blueprint | Drafting grid, bordered title block | ✖ |
-| | Git Changelog | Versioned headers, diff-style `+` bullets | ✖ |
-| | Stack Ledger | Bordered tech-stack badges, single column | ✅ |
+| | Tech Matrix | Dark rail, monospaced labels | ✖ |
 | **Creative** | Creative Band | Full-bleed colour header, optional photo | ✖ |
 | | Monogram Modern | Initials tile, tinted heading strips | ✖ |
 | | Career Timeline | Dated markers down the main column | ✖ |
 | **Specialist** | Academic CV | Education and publications first, multi-page | ✅ |
 | | Graduate Entry | Education and projects above work history | ✅ |
 | | Detailed / Federal | Long-form, full employer detail | ✅ |
-
-The **Engineering** category is built from the conventions engineers already
-read every day — a terminal prompt, a git diff, a changelog, a drafting
-schematic — rather than generic "tech" colour schemes. Stack Ledger is the
-ATS-safe option in the set for portals that will parse a sidebar badly; the
-other four are for CVs sent straight to a hiring manager or through a
-referral, where the format itself signals fluency.
 
 **ATS-safe** marks single-column designs with no graphics, tables or text boxes
 — the structure applicant tracking systems parse reliably. Use one for online
@@ -156,7 +145,7 @@ src/
   types/resume.ts            The document model everything reads and writes
   state/store.ts             Zustand store, localStorage persistence, undo/redo
   templates/
-    registry.ts              The 19 template definitions and their defaults
+    registry.ts              The 15 template definitions and their defaults
     applyTemplate.ts         Template switching, incl. the section-preset loan
     ResumeDocument.tsx       Layout engines + header variants
     Sections.tsx             Section renderers shared by every template
@@ -201,9 +190,9 @@ losing anything.
 npm test
 ```
 
-58 tests covering the CV parser (headings, contacts, entry splitting, date
+50 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, template registry integrity, Word generation for all 19 templates, and JSON round-tripping.
+switching, Word generation for all 15 templates, and JSON round-tripping.
 
 ## Notes and limits
 

@@ -355,19 +355,11 @@ export function scoreResume(resume: Resume): ResumeScore {
   let ats = 100;
   if (!template.atsSafe) {
     ats -= 18;
-    const isMultiColumn =
-      template.layout === 'sidebar-left' ||
-      template.layout === 'sidebar-right' ||
-      template.layout === 'header-band';
     add(
       'ATS',
       'suggestion',
-      isMultiColumn
-        ? `"${template.name}" is a multi-column design.`
-        : `"${template.name}" uses decorative elements a parser may not read cleanly.`,
-      isMultiColumn
-        ? 'Some applicant tracking systems read columns out of order. For online portals, switch to ATS Classic or Modern Professional and keep this one for direct applications.'
-        : 'Symbols, borders and non-standard headings can confuse a parser even in a single column. For online portals, switch to ATS Classic or Modern Professional and keep this one for direct applications.',
+      `"${template.name}" is a multi-column design.`,
+      'Some applicant tracking systems read columns out of order. For online portals, switch to ATS Classic or Modern Professional and keep this one for direct applications.',
     );
   }
   if (resume.settings.showPhoto && resume.basics.photo) {

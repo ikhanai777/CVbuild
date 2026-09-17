@@ -4,7 +4,6 @@ export type TemplateCategory =
   | 'ATS & classic'
   | 'Modern professional'
   | 'Two-column'
-  | 'Engineering'
   | 'Creative'
   | 'Specialist';
 
@@ -193,7 +192,7 @@ export const TEMPLATES: TemplateDefinition[] = [
   {
     id: 'tech-matrix',
     name: 'Tech Matrix',
-    category: 'Engineering',
+    category: 'Two-column',
     description:
       'Monospaced labels and a dense skills matrix in the rail, with projects promoted near the top. Written for engineers.',
     bestFor: ['Software engineering', 'Data', 'DevOps'],
@@ -208,79 +207,6 @@ export const TEMPLATES: TemplateDefinition[] = [
       fontFamily: 'Inter',
       uppercaseHeadings: true,
       margin: 13,
-    },
-  },
-  {
-    id: 'terminal-console',
-    name: 'Terminal',
-    category: 'Engineering',
-    description:
-      'A terminal window for a header — traffic-light dots, monospaced prompt — with shell-style `>` bullets throughout. Built to be recognised in under two seconds by another engineer.',
-    bestFor: ['Software engineering', 'DevOps/SRE', 'Open-source contributors'],
-    atsSafe: false,
-    layout: 'single',
-    header: 'band',
-    className: 'tpl-terminal',
-    defaults: {
-      accentColor: '#0d1b2a',
-      fontFamily: 'Inter',
-      uppercaseHeadings: false,
-      showIcons: false,
-      margin: 16,
-    },
-  },
-  {
-    id: 'systems-blueprint',
-    name: 'Systems Blueprint',
-    category: 'Engineering',
-    description:
-      'A faint drafting grid and a bordered title block, like a schematic. Precise and technical without tipping into gimmicky.',
-    bestFor: ['Hardware & embedded', 'Infrastructure', 'Systems engineering'],
-    atsSafe: false,
-    layout: 'single',
-    header: 'stacked',
-    className: 'tpl-blueprint',
-    defaults: {
-      accentColor: '#1d4ed8',
-      fontFamily: 'Inter',
-      uppercaseHeadings: true,
-      margin: 16,
-    },
-  },
-  {
-    id: 'git-changelog',
-    name: 'Git Changelog',
-    category: 'Engineering',
-    description:
-      'Roles read like changelog entries — versioned headers, diff-style `+` bullets. A clear, functional format built entirely from the conventions of shipping software.',
-    bestFor: ['Software engineering', 'Platform teams', 'Technical leads'],
-    atsSafe: false,
-    layout: 'single',
-    header: 'compact',
-    className: 'tpl-changelog',
-    defaults: {
-      accentColor: '#2ea44f',
-      fontFamily: 'Inter',
-      uppercaseHeadings: false,
-      margin: 16,
-    },
-  },
-  {
-    id: 'stack-ledger',
-    name: 'Stack Ledger',
-    category: 'Engineering',
-    description:
-      'A single-column, ATS-safe layout with skills set as bordered stack badges. The engineering flavour without the risk of a portal misreading a sidebar.',
-    bestFor: ['Online applications', 'Backend & infrastructure', 'Skills-heavy CVs'],
-    atsSafe: true,
-    layout: 'single',
-    header: 'split',
-    className: 'tpl-ledger',
-    defaults: {
-      accentColor: '#334155',
-      fontFamily: 'Inter',
-      uppercaseHeadings: true,
-      margin: 15,
     },
   },
   {
@@ -424,7 +350,6 @@ export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
   'ATS & classic',
   'Modern professional',
   'Two-column',
-  'Engineering',
   'Creative',
   'Specialist',
 ];
@@ -453,6 +378,4 @@ export const ACCENT_PRESETS = [
   '#6b3f5b',
   '#b3452f',
   '#8a5a2b',
-  '#0d1b2a',
-  '#2ea44f',
 ];

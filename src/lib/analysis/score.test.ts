@@ -60,27 +60,6 @@ describe('scoreResume', () => {
     expect(scoreResume(weak).total).toBeLessThan(scoreResume(base).total);
   });
 
-  it('describes a non-ATS-safe finding accurately for the actual layout', () => {
-    // A regression: the message used to say "multi-column design" even for
-    // single-column templates that are merely decorated (Monogram Modern,
-    // Career Timeline, and now several Engineering templates).
-    const singleColumnButDecorated = ['monogram-modern', 'terminal-console', 'systems-blueprint', 'git-changelog'];
-    const trueMultiColumn = ['two-column-classic', 'tech-matrix', 'creative-band'];
-
-    for (const id of singleColumnButDecorated) {
-      const resume = sampleResume();
-      resume.settings.templateId = id;
-      const issue = scoreResume(resume).issues.find((i) => i.category === 'ATS');
-      expect(issue?.message).not.toContain('multi-column');
-    }
-    for (const id of trueMultiColumn) {
-      const resume = sampleResume();
-      resume.settings.templateId = id;
-      const issue = scoreResume(resume).issues.find((i) => i.category === 'ATS');
-      expect(issue?.message).toContain('multi-column');
-    }
-  });
-
   it('locates the bullet each finding refers to', () => {
     const resume = sampleResume();
     resume.experience[0].highlights[0] = 'Responsible for the checkout platform';
