@@ -1,6 +1,6 @@
 # CVBuild
 
-A CV / resume builder with 30 print-ready templates, a writing coach built from
+A CV / resume builder with 40 print-ready templates, a writing coach built from
 recruiter-side guidance, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
@@ -45,7 +45,7 @@ something new, then treats prose following an entry header as a bullet that lost
 its marker. Without that, a three-role CV imports as six half-sentences spread
 over five jobs.
 
-### 30 templates
+### 40 templates
 
 Each is a genuinely different layout, not a colour swap. Every template renders
 the same content model, so switching never costs you a retype.
@@ -56,6 +56,8 @@ the same content model, so switching never costs you a retype.
 | | Harvard Serif | Centred serif, rule-under-heading | ✅ |
 | | Compact One-Page | Tight leading for long careers | ✅ |
 | | Broadsheet | Masthead rule, justified serif, drop cap | ✅ |
+| | Ledger | Ruled frame per page, dates in their own column | ✅ |
+| | Bronze | Large italic serif headings against small body text | ✅ |
 | **Modern professional** | Modern Professional | Accent rules, generous spacing | ✅ |
 | | Executive Brief | Small caps, summary-led | ✅ |
 | | Minimal Swiss | Heading rail, hairline rules | ✅ |
@@ -64,11 +66,17 @@ the same content model, so switching never costs you a retype.
 | | Muse | Centred and light, headings between hairlines | ✅ |
 | | Kyoto | One hairline down the page, very large margins | ✅ |
 | | Marina | Every section in a soft rounded panel | ✅ |
+| | Beacon | Banded header in three parts, portrait centred | ✖ |
+| | Signal | Employers in colour, skills underscored as tags | ✅ |
+| | Ribbon | Solid band down the trimmed edge of every page | ✅ |
 | **Two-column** | Two-Column Classic | Tinted left rail | ✖ |
 | | Elegant Sidebar | Serif body, tinted right rail | ✖ |
 | | Tech Matrix | Dark rail, monospaced labels | ✖ |
 | | Portfolio Rail | Portrait left, contact strip, dotted timeline | ✖ |
 | | Onyx | Dark rail bled to the page edges, full height | ✖ |
+| | Meridian | Tinted rail meeting a dark header band | ✖ |
+| | Cascade | The rail as a floating rounded card | ✖ |
+| | Granite | Right rail, squared portrait, tinted page footer | ✖ |
 | **Creative** | Creative Band | Full-bleed colour header, optional photo | ✖ |
 | | Studio Split | Heavy name block, ruled contacts, right rail | ✖ |
 | | Editorial | Wide tracking, hairlines, a great deal of air | ✖ |
@@ -77,6 +85,8 @@ the same content model, so switching never costs you a retype.
 | | Bauhaus | Circle-and-square motif, thick bars, square bullets | ✖ |
 | | Atelier | Double-ruled title block over a Garamond body | ✖ |
 | | Midnight | The whole page inverted, pale type on near-black | ✖ |
+| | Marquee | Headings reversed out of solid blocks | ✖ |
+| | Prism | The colour band closing on a slant | ✖ |
 | | Monogram Modern | Initials tile, tinted heading strips | ✖ |
 | | Career Timeline | Dated markers down the main column | ✖ |
 | **Specialist** | Academic CV | Education and publications first, multi-page | ✅ |
@@ -123,6 +133,19 @@ serif, a drop cap opening the summary (styling only, so it stays ATS-safe).
 **Marina** puts each section in a soft rounded panel. **Midnight** inverts the
 whole page — excellent as a PDF, expensive to print, and the description says so.
 
+The newest ten take a device each from designer CV layouts. **Meridian** meets a
+tinted rail and a dark header band on one line, with the portrait straddling the
+join. **Ledger** rules a frame on every page and moves dates into their own
+left-hand column — the only template that restructures the entry itself rather
+than its chrome. **Cascade** floats the rail as a rounded card. **Beacon** bands
+the header in three parts with the portrait centred. **Granite** puts experience
+left and the summary right, under a squared portrait and a boxed contact grid,
+and closes each page with a tinted band. **Signal** picks out employers in
+colour and underscores skills as tags. **Marquee** reverses every heading out of
+a solid block. **Prism** closes its colour band on a slant. **Ribbon** runs a
+band down the trimmed edge. **Bronze** sets headings large in italic serif
+against small body text.
+
 ### The writing coach
 
 The Review tab scores the CV out of 100 across seven weighted categories —
@@ -164,7 +187,12 @@ tailoring per application, and what loses applications.
   would undo the rest of the app's work. Choose "Save as PDF" in the dialog.
   When the app is running inside an iframe — where `window.print()` is commonly
   blocked by the frame sandbox — the CV is written into a new top-level window
-  and printed from there instead.
+  and printed from there instead. Vertical margins come from `@page` rather than
+  the page element's padding, because padding applies to a box once: on a
+  two-page CV the second sheet otherwise got no top margin at all and text ran
+  within a few millimetres of the paper edge, inside the unprintable region of
+  most printers. The first sheet keeps its margin on the element so the
+  full-bleed headers can still reach the trimmed edge.
 - **Word (.docx)** — a real Word document built with the `docx` library:
   styled paragraphs, tab-stopped dates, genuine bullet lists, and two-column
   templates flattened into a borderless table so text keeps reading order.
@@ -199,7 +227,7 @@ src/
   types/resume.ts            The document model everything reads and writes
   state/store.ts             Zustand store, localStorage persistence, undo/redo
   templates/
-    registry.ts              The 30 template definitions and their defaults
+    registry.ts              The 40 template definitions and their defaults
     applyTemplate.ts         Template switching, incl. the section-preset loan
     ResumeDocument.tsx       Layout engines + header variants
     Sections.tsx             Section renderers shared by every template
@@ -246,7 +274,7 @@ npm test
 
 52 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, Word generation for all 30 templates, and JSON round-tripping.
+switching, Word generation for all 40 templates, and JSON round-tripping.
 
 ## Notes and limits
 

@@ -45,10 +45,18 @@
     box-shadow: none;
     border-radius: 0;
     margin: 0;
-    /* The page grows with content; the browser paginates it against @page. */
-    min-height: var(--cv-page-height);
+    /* The browser paginates against @page, so no minimum is wanted here. A
+       full-sheet min-height no longer fits inside the @page content box once
+       that box has vertical margins, which pushed a blank sheet onto the end of
+       every export. On screen the minimum stays, so a short CV still previews
+       as a whole page. */
+    min-height: 0;
     height: auto;
     overflow: visible;
+    /* The bottom margin comes from @page so that it applies to every sheet
+       rather than only after the last line of the flow (see export/print.ts).
+       Keeping the element's padding here as well would double it. */
+    padding-bottom: 0;
   }
 
   /* Keep headings with their content and never split a bullet across pages. */

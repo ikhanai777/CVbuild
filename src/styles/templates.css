@@ -931,26 +931,38 @@
 }
 
 /* 23. Onyx — a solid dark rail bled to the page edges, full height. ------ */
-/* The page becomes a flex column so the body can claim the remaining height
-   and the rail can stretch to the bottom edge rather than stopping under its
-   own content. */
+/* The rail's colour is a background on the body rather than a stretched box.
+   Stretching a coloured box to the foot of the sheet needs a negative margin
+   and `align-items: stretch`, and that combination makes the flex row's height
+   definite — a rail carrying more than the main column was then cut off. A
+   background always spans the body and can never overflow it. */
 .tpl-onyx {
   display: flex;
   flex-direction: column;
+  /* The rail reaches the trimmed edge because the page has no left padding,
+     not because anything is pulled outwards. */
+  padding-left: 0;
+}
+.tpl-onyx .cv-header--split {
+  padding-left: var(--cv-margin);
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 3mm;
+  margin-bottom: 5mm;
 }
 .tpl-onyx .cv-body--sidebar-left {
-  flex: 1;
-  align-items: stretch;
+  /* Basis auto keeps the body's own content height as the floor, then it grows
+     to fill whatever the page has left. */
+  flex: 1 0 auto;
   gap: 0;
+  background-image: linear-gradient(var(--cv-accent), var(--cv-accent));
+  background-size: calc(var(--cv-sidebar-width) + var(--cv-margin)) 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0;
 }
 .tpl-onyx .cv-side {
-  background: var(--cv-accent);
-  color: #eef1f6;
-  /* Negative margins cancel the page padding on three sides so the panel
-     reaches the trimmed edge of the sheet. */
-  margin: 0 0 calc(var(--cv-margin) * -1) calc(var(--cv-margin) * -1);
-  padding: 1mm var(--cv-margin) var(--cv-margin) var(--cv-margin);
   width: calc(var(--cv-sidebar-width) + var(--cv-margin));
+  color: #eef1f6;
+  padding: 1mm var(--cv-margin) var(--cv-margin) var(--cv-margin);
 }
 .tpl-onyx .cv-main {
   padding-left: 8mm;
@@ -970,11 +982,6 @@
 }
 .tpl-onyx .cv-side .cv-skill + .cv-skill::before {
   color: rgba(238, 241, 246, 0.4);
-}
-.tpl-onyx .cv-header--split {
-  border-bottom: 2px solid var(--cv-accent);
-  padding-bottom: 3mm;
-  margin-bottom: 5mm;
 }
 .tpl-onyx .cv-name {
   font-weight: 800;
@@ -1347,4 +1354,526 @@
 .tpl-midnight .cv-photo img {
   border-radius: 50%;
   border: 0.6mm solid var(--cv-rule);
+}
+
+/* 31. Meridian — tinted rail meeting a dark header band. ----------------- */
+/* The rail's tint is painted as a background on the page itself rather than on
+   the sidebar box. A coloured box would have to be stretched to reach the foot
+   of the sheet, and stretching it inside a flex row makes the row's height
+   definite — a rail with more content than the main column then gets silently
+   cut off. A background cannot overflow and cannot add a page. */
+.tpl-meridian {
+  background-image: linear-gradient(var(--cv-accent-soft), var(--cv-accent-soft));
+  background-size: calc(var(--cv-sidebar-width) + var(--cv-margin)) 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.tpl-meridian .cv-header--stacked {
+  align-items: stretch;
+  gap: 0;
+  margin: calc(var(--cv-margin) * -1) calc(var(--cv-margin) * -1) 0;
+}
+.tpl-meridian .cv-photo {
+  width: calc(var(--cv-sidebar-width) + var(--cv-margin));
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7mm 4mm;
+}
+.tpl-meridian .cv-photo img {
+  width: 28mm;
+  height: 28mm;
+  border-radius: 50%;
+  border: 1.2mm solid #fff;
+}
+/* The dark band covers everything right of the rail and bleeds to the top and
+   right edges of the sheet. */
+.tpl-meridian .cv-header--stacked .cv-header__text {
+  background: var(--cv-accent);
+  color: var(--cv-on-accent);
+  padding: 8mm 9mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tpl-meridian .cv-name {
+  color: inherit;
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tpl-meridian .cv-headline {
+  color: inherit;
+  opacity: 0.9;
+  margin-top: 0.4em;
+}
+/* Contacts stay in the band. Hiding them to keep it clean would drop the email
+   and phone from the CV entirely — the one thing it cannot be missing. */
+.tpl-meridian .cv-header--stacked .cv-contact {
+  /* The base colour for contacts is a dark grey meant for white paper; on the
+     band it has to come from the reversed-out text colour instead. */
+  color: inherit;
+  opacity: 0.88;
+  margin-top: 0.8em;
+  gap: 0.25em 1em;
+  font-size: 0.8em;
+}
+.tpl-meridian .cv-header--stacked .cv-icon {
+  color: inherit;
+}
+.tpl-meridian .cv-body--sidebar-left {
+  gap: 0;
+}
+.tpl-meridian .cv-side {
+  margin-left: calc(var(--cv-margin) * -1);
+  padding: 7mm var(--cv-margin) 0 var(--cv-margin);
+  width: calc(var(--cv-sidebar-width) + var(--cv-margin));
+}
+.tpl-meridian .cv-main {
+  padding: 7mm 0 0 8mm;
+}
+.tpl-meridian .cv-section__title {
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 0.25em;
+  letter-spacing: 0.1em;
+}
+
+/* 32. Ledger — a ruled frame per page, dates in their own column. -------- */
+.tpl-ledgerframe {
+  --frame: 8mm;
+  /* Drawn as backgrounds rather than a border so the rule repeats correctly on
+     every printed page; a real border would draw once around the whole flow. */
+  background-image:
+    linear-gradient(
+      to bottom,
+      transparent 0 var(--frame),
+      var(--cv-accent) var(--frame) calc(var(--frame) + 0.8px),
+      transparent calc(var(--frame) + 0.8px)
+    ),
+    linear-gradient(
+      to top,
+      transparent 0 var(--frame),
+      var(--cv-accent) var(--frame) calc(var(--frame) + 0.8px),
+      transparent calc(var(--frame) + 0.8px)
+    ),
+    linear-gradient(var(--cv-accent), var(--cv-accent)),
+    linear-gradient(var(--cv-accent), var(--cv-accent));
+  background-repeat: repeat-y, repeat-y, no-repeat, no-repeat;
+  background-size:
+    calc(100% - var(--frame) * 2) var(--cv-page-height),
+    calc(100% - var(--frame) * 2) var(--cv-page-height),
+    0.8px 100%,
+    0.8px 100%;
+  background-position:
+    var(--frame) 0,
+    var(--frame) 0,
+    var(--frame) 0,
+    calc(100% - var(--frame)) 0;
+}
+.tpl-ledgerframe .cv-name {
+  font-size: 2.5em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.tpl-ledgerframe .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.78em;
+  margin-top: 0.3em;
+  text-indent: 0.32em;
+}
+.tpl-ledgerframe .cv-header--centered .cv-contact {
+  border-top: 0.8px solid var(--cv-accent);
+  border-bottom: 0.8px solid var(--cv-accent);
+  padding: 0.5em 0;
+  margin-top: 1em;
+  gap: 0.3em 2.2em;
+}
+.tpl-ledgerframe .cv-section__title {
+  border-bottom: 1.4pt solid var(--cv-accent);
+  padding-bottom: 0.15em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-size: 1.05em;
+}
+/* `display: contents` drops the head wrapper so its children join the entry's
+   grid — dates land in the left column, everything else in the right. The DOM
+   order is unchanged, so a parser still reads title before date. */
+.tpl-ledgerframe .cv-entry {
+  display: grid;
+  grid-template-columns: 26% 1fr;
+  column-gap: 5mm;
+}
+.tpl-ledgerframe .cv-entry__head {
+  display: contents;
+}
+.tpl-ledgerframe .cv-entry__meta {
+  grid-column: 1;
+  grid-row: 1;
+  text-align: left;
+  white-space: normal;
+  font-weight: 700;
+  color: var(--cv-text);
+}
+.tpl-ledgerframe .cv-entry__titles {
+  grid-column: 2;
+  grid-row: 1;
+}
+.tpl-ledgerframe .cv-entry__summary,
+.tpl-ledgerframe .cv-bullets {
+  grid-column: 2;
+}
+.tpl-ledgerframe .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-ledgerframe .cv-skills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em 6mm;
+}
+.tpl-ledgerframe .cv-skill-group {
+  flex-direction: column;
+  gap: 0.1em;
+}
+.tpl-ledgerframe .cv-skill-group__label {
+  min-width: 0;
+}
+
+/* 33. Cascade — the rail as a floating rounded card. --------------------- */
+.tpl-cascade .cv-side {
+  background: var(--cv-accent-soft);
+  border-radius: 4mm;
+  padding: 6mm 5mm;
+  align-self: flex-start;
+}
+.tpl-cascade .cv-body--sidebar-left {
+  gap: 6mm;
+}
+.tpl-cascade .cv-name {
+  font-weight: 700;
+  font-size: 2.2em;
+}
+.tpl-cascade .cv-headline {
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-cascade .cv-photo img {
+  width: 28mm;
+  height: 28mm;
+  border-radius: 4mm;
+}
+.tpl-cascade .cv-section__title {
+  color: var(--cv-accent);
+  font-size: 1.05em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 0.2em;
+}
+.tpl-cascade .cv-entry__title {
+  font-weight: 700;
+}
+.tpl-cascade .cv-bullets li::marker {
+  color: var(--cv-accent);
+}
+
+/* 34. Beacon — banded header in three parts, portrait centred. ----------- */
+.tpl-beacon .cv-header--split {
+  align-items: center;
+  background: var(--cv-accent-soft);
+  margin: calc(var(--cv-margin) * -1) calc(var(--cv-margin) * -1) 6mm;
+  padding: 7mm 10mm;
+  gap: 6mm;
+}
+/* Source order is name, contacts, portrait; `order` puts the portrait between
+   them without touching the markup. */
+.tpl-beacon .cv-photo {
+  order: 2;
+}
+.tpl-beacon .cv-header--split .cv-contact {
+  order: 3;
+}
+.tpl-beacon .cv-photo img {
+  width: 26mm;
+  height: 26mm;
+  border-radius: 50%;
+  border: 1mm solid #fff;
+}
+.tpl-beacon .cv-name {
+  font-size: 1.9em;
+  font-weight: 700;
+  line-height: 1.05;
+}
+.tpl-beacon .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-size: 0.84em;
+  letter-spacing: 0.1em;
+}
+.tpl-beacon .cv-section__title::after {
+  content: '';
+  flex: 1;
+  height: 0.7px;
+  background: var(--cv-accent-line);
+}
+.tpl-beacon .cv-entry__title {
+  font-weight: 700;
+}
+
+/* 35. Granite — right rail, squared portrait, tinted page footer. -------- */
+.tpl-granite {
+  /* One tinted band closing every printed page, not just the last. */
+  background-image: linear-gradient(to top, var(--cv-accent-soft) 0 7mm, transparent 7mm);
+  background-size: 100% var(--cv-page-height);
+  background-repeat: repeat-y;
+}
+.tpl-granite .cv-header--split {
+  align-items: flex-start;
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 4mm;
+}
+.tpl-granite .cv-photo img {
+  width: 33mm;
+  height: 38mm;
+  border-radius: 0;
+}
+.tpl-granite .cv-name {
+  font-size: 2.2em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.tpl-granite .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.76em;
+  margin-top: 0.5em;
+}
+/* Contacts as a boxed two-by-two grid rather than a list. */
+.tpl-granite .cv-header--split .cv-contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35em 5mm;
+  align-items: start;
+  text-align: left;
+  border-top: 0.6px solid var(--cv-rule);
+  border-bottom: 0.6px solid var(--cv-rule);
+  padding: 0.6em 0;
+  margin-top: 1.4em;
+  flex: 1;
+}
+.tpl-granite .cv-section__title {
+  letter-spacing: 0.1em;
+  font-weight: 800;
+}
+.tpl-granite .cv-side .cv-section__title {
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 0.2em;
+}
+.tpl-granite .cv-entry__title {
+  font-weight: 700;
+}
+
+/* 36. Signal — employers in colour, skills underscored as tags. ---------- */
+.tpl-signal {
+  --cv-base-size: 10.2pt;
+}
+.tpl-signal .cv-name {
+  font-size: 2.3em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.tpl-signal .cv-headline {
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-signal .cv-section__title {
+  color: var(--cv-muted);
+  font-weight: 600;
+  font-size: 0.78em;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+.tpl-signal .cv-section__title::after {
+  content: '';
+  flex: 1;
+  height: 0.7px;
+  background: var(--cv-rule);
+}
+.tpl-signal .cv-entry__title {
+  font-weight: 600;
+  font-size: 1.08em;
+}
+/* The employer, not the job title, is what the accent picks out — it is the
+   line a reader scans for when they already know the role. */
+.tpl-signal .cv-entry__subtitle {
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-signal .cv-skill {
+  display: inline-block;
+  border-bottom: 1.2px solid var(--cv-accent);
+  padding: 0 0.35em 0.15em;
+  margin: 0 0.5em 0.45em 0;
+}
+.tpl-signal .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-signal .cv-bullets li::marker {
+  color: var(--cv-accent);
+}
+
+/* 37. Marquee — headings reversed out of solid blocks. ------------------- */
+.tpl-marquee .cv-section__title {
+  display: inline-block;
+  background: var(--cv-accent);
+  color: var(--cv-on-accent);
+  padding: 0.28em 0.95em;
+  border-radius: 1px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.tpl-marquee .cv-name {
+  font-size: 2.7em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+.tpl-marquee .cv-header--bold-left {
+  border-bottom: 1.6mm solid var(--cv-accent);
+  padding-bottom: 4mm;
+  align-items: flex-end;
+}
+.tpl-marquee .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  font-size: 0.76em;
+}
+.tpl-marquee .cv-entry__title {
+  font-weight: 800;
+}
+.tpl-marquee .cv-entry__dates {
+  font-weight: 700;
+  color: var(--cv-accent);
+}
+
+/* 38. Prism — the colour band closing on a slant. ------------------------ */
+.tpl-prism .cv-header--band {
+  /* The slant is the only geometric move on the page, so it is cut generously
+     and nothing else competes with it. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9mm), 0 100%);
+  padding: 10mm 14mm 15mm;
+  margin-bottom: 4mm;
+}
+.tpl-prism .cv-name {
+  font-size: 2.4em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.tpl-prism .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75em;
+  margin-top: 0.6em;
+}
+.tpl-prism .cv-header--band .cv-photo img {
+  border-radius: 50%;
+  border: 1mm solid rgba(255, 255, 255, 0.4);
+}
+.tpl-prism .cv-section__title {
+  color: var(--cv-accent);
+  letter-spacing: 0.12em;
+  border-bottom: 1.4pt solid var(--cv-accent);
+  padding-bottom: 0.15em;
+}
+.tpl-prism .cv-entry__title {
+  font-weight: 700;
+}
+
+/* 39. Ribbon — a solid band down the trimmed edge of every page. --------- */
+.tpl-ribbon {
+  background-image: linear-gradient(var(--cv-accent), var(--cv-accent));
+  background-size: 6mm 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  padding-left: calc(var(--cv-margin) + 7mm);
+}
+.tpl-ribbon .cv-header--split {
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 3mm;
+}
+.tpl-ribbon .cv-name {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.tpl-ribbon .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.76em;
+  margin-top: 0.5em;
+}
+.tpl-ribbon .cv-section__title {
+  letter-spacing: 0.12em;
+  position: relative;
+  padding-left: 4mm;
+}
+.tpl-ribbon .cv-section__title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  width: 1.6mm;
+  height: 1.6mm;
+  background: var(--cv-accent);
+}
+.tpl-ribbon .cv-entry__title {
+  font-weight: 700;
+}
+
+/* 40. Bronze — large italic serif headings against small body text. ------ */
+.tpl-bronze {
+  --cv-base-size: 10pt;
+  background-color: #fdfaf4;
+}
+.tpl-bronze .cv-name {
+  font-size: 2.4em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.tpl-bronze .cv-headline {
+  font-style: italic;
+  font-size: 1em;
+  margin-top: 0.3em;
+}
+.tpl-bronze .cv-header--stacked {
+  border-bottom: 0.8px solid var(--cv-accent-line);
+  padding-bottom: 3mm;
+}
+/* The contrast between a large italic heading and small body copy is the whole
+   design — there is no rule, tint or bar anywhere. */
+.tpl-bronze .cv-section__title {
+  font-size: 1.5em;
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 0.35em;
+}
+.tpl-bronze .cv-entry__title {
+  font-weight: 700;
+  font-size: 0.98em;
+}
+.tpl-bronze .cv-entry__dates {
+  font-style: italic;
+}
+.tpl-bronze .cv-bullets li::marker {
+  color: var(--cv-accent);
 }

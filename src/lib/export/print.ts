@@ -21,9 +21,29 @@ const PAGE_DIMENSIONS = {
 } as const;
 
 /**
- * The @page rule has to be written at print time because the paper size is a
- * user setting and @page cannot read CSS custom properties.
+ * Builds the @page rule. It has to be written at print time because the paper
+ * size and margin are user settings, and @page cannot read CSS custom
+ * properties.
+ *
+ * The vertical margins come from @page rather than from the page element's
+ * padding, because padding is applied to the box once — so on a two-page CV the
+ * second sheet got no top margin at all and text ran to within a few
+ * millimetres of the paper edge, inside the unprintable region of most
+ * printers. @page margins are applied to every sheet.
+ *
+ * The first sheet is the exception: its top margin stays with the element, so
+ * that templates whose header bleeds to the trimmed edge (Creative Band,
+ * Meridian, Prism, Aurora) can still pull themselves out to it with a negative
+ * margin. Horizontal margins stay on the element for the same reason.
  */
+function pageRuleFor(resume: Resume): string {
+  const margin = Math.max(0, resume.settings.margin);
+  return [
+    `@page { size: ${PAGE_DIMENSIONS[resume.settings.paperSize]}; margin: ${margin}mm 0; }`,
+    `@page :first { margin-top: 0; }`,
+  ].join('\n');
+}
+
 export function applyPageRule(resume: Resume): void {
   let style = document.getElementById(PAGE_STYLE_ID) as HTMLStyleElement | null;
   if (!style) {
@@ -31,7 +51,7 @@ export function applyPageRule(resume: Resume): void {
     style.id = PAGE_STYLE_ID;
     document.head.appendChild(style);
   }
-  style.textContent = `@page { size: ${PAGE_DIMENSIONS[resume.settings.paperSize]}; margin: 0; }`;
+  style.textContent = pageRuleFor(resume);
 }
 
 function isEmbedded(): boolean {
@@ -87,9 +107,9 @@ ${externalHrefs.map((href) => `<link rel="stylesheet" href="${escapeAttr(href)}"
 <style>${css}</style>
 <style>
   /* The CV is the whole document here, so undo the on-screen framing. */
-  @page { size: ${PAGE_DIMENSIONS[resume.settings.paperSize]}; margin: 0; }
+  ${pageRuleFor(resume)}
   html, body { margin: 0; padding: 0; background: #fff; height: auto; }
-  .cv-page { box-shadow: none; border-radius: 0; margin: 0 auto; }
+  .cv-page { box-shadow: none; border-radius: 0; margin: 0 auto; padding-bottom: 0; }
   @media print { .cv-page { margin: 0; } }
 </style>
 </head>
