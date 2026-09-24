@@ -24,6 +24,32 @@ export interface Basics {
   summary: string;
 }
 
+/**
+ * Details that Gulf employers screen on before they read a single bullet.
+ *
+ * In the UAE a recruiter's first questions are nationality, visa status and how
+ * soon you can join — the answers decide whether an offer is even possible
+ * (visa sponsorship, Emiratisation quotas, notice periods of 30–90 days). CVs
+ * written for the market put these up front, so the model carries them as
+ * first-class fields rather than leaving them to a custom section.
+ */
+export interface PersonalDetails {
+  /** e.g. "Indian", "Emirati". An Emirati candidate is flagged as a UAE National. */
+  nationality: string;
+  /** e.g. "Employment visa (transferable)", "Golden Visa", "Visit visa". */
+  visaStatus: string;
+  /** Notice period or start date, e.g. "30 days", "Immediate". */
+  availability: string;
+  /** e.g. "UAE — light vehicle". Material for sales, field and logistics roles. */
+  drivingLicence: string;
+  /** Optional in the UAE; commonly included, never required. */
+  dateOfBirth: string;
+  gender: string;
+  maritalStatus: string;
+  /** The name written in Arabic script, printed under the Latin name. */
+  nameArabic: string;
+}
+
 export interface ExperienceItem {
   id: string;
   company: string;
@@ -147,11 +173,19 @@ export type SectionKey =
   | 'languages'
   | 'volunteer'
   | 'interests'
-  | 'references';
+  | 'references'
+  | 'personal';
 
 export type SectionId = SectionKey | `custom:${string}`;
 
 export type PaperSize = 'A4' | 'Letter';
+
+/**
+ * Which hiring market the CV is written for. It changes what the coach asks for
+ * (visa and nationality in the UAE; nothing personal in the UK/US) and how long
+ * a CV is expected to run.
+ */
+export type Market = 'uae' | 'international';
 
 export interface ResumeSettings {
   templateId: string;
@@ -183,6 +217,11 @@ export interface ResumeSettings {
    * by the user, so switching away can hand the user's own layout back.
    */
   sectionPreset: string | null;
+  market: Market;
+  /** Print nationality, visa, notice period and licence in the header. */
+  showKeyFacts: boolean;
+  /** Set every section heading in English with its Arabic equivalent beside it. */
+  bilingualHeadings: boolean;
   /** The user's own layout, held while a template preset overrides it. */
   userSectionOrder: SectionId[] | null;
   userHiddenSections: SectionId[] | null;
@@ -204,6 +243,7 @@ export interface Resume {
   meta: ResumeMeta;
   settings: ResumeSettings;
   basics: Basics;
+  personal: PersonalDetails;
   experience: ExperienceItem[];
   education: EducationItem[];
   skills: SkillGroup[];
@@ -230,6 +270,7 @@ export const DEFAULT_SECTION_ORDER: SectionId[] = [
   'awards',
   'publications',
   'languages',
+  'personal',
   'volunteer',
   'interests',
   'references',
@@ -248,4 +289,45 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   volunteer: 'Volunteering',
   interests: 'Interests',
   references: 'References',
+  personal: 'Personal Details',
 };
+
+/**
+ * Arabic section headings, for bilingual CVs. Government and semi-government
+ * employers in the UAE work in both languages, and a bilingual heading signals
+ * that before the reader reaches the Languages section.
+ */
+export const SECTION_LABELS_AR: Record<SectionKey, string> = {
+  summary: 'نبذة مهنية',
+  experience: 'الخبرة العملية',
+  education: 'التعليم',
+  skills: 'المهارات',
+  projects: 'المشاريع',
+  certifications: 'الشهادات المهنية',
+  awards: 'الجوائز والتكريم',
+  publications: 'المنشورات',
+  languages: 'اللغات',
+  volunteer: 'العمل التطوعي',
+  interests: 'الاهتمامات',
+  references: 'المراجع',
+  personal: 'البيانات الشخصية',
+};
+
+/** Labels for the personal-details fields, in print order. */
+export const PERSONAL_FIELDS: Array<{ key: keyof PersonalDetails; label: string; ar: string }> = [
+  { key: 'nationality', label: 'Nationality', ar: 'الجنسية' },
+  { key: 'visaStatus', label: 'Visa status', ar: 'حالة التأشيرة' },
+  { key: 'availability', label: 'Availability', ar: 'الإتاحة' },
+  { key: 'drivingLicence', label: 'Driving licence', ar: 'رخصة القيادة' },
+  { key: 'dateOfBirth', label: 'Date of birth', ar: 'تاريخ الميلاد' },
+  { key: 'gender', label: 'Gender', ar: 'الجنس' },
+  { key: 'maritalStatus', label: 'Marital status', ar: 'الحالة الاجتماعية' },
+];
+
+/** The personal fields that can be promoted into the header as key facts. */
+export const KEY_FACT_FIELDS: Array<keyof PersonalDetails> = [
+  'nationality',
+  'visaStatus',
+  'availability',
+  'drivingLicence',
+];

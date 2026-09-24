@@ -50,8 +50,10 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
           CV
         </span>
         <span>
-          <strong>CVBuild</strong>
-          <span className="muted small toolbar__tagline">Print-ready CVs, built in your browser</span>
+          <strong>
+            CVBuild <span className="toolbar__market">UAE</span>
+          </strong>
+          <span className="muted small toolbar__tagline">CVs built for the UAE job market</span>
         </span>
       </div>
 

@@ -19,6 +19,7 @@ import {
   wordCount,
 } from './language';
 import { matchKeywords } from './keywords';
+import { isUaePhone, uaeChecklist, uaeScore } from '../uae';
 
 export type Severity = 'critical' | 'warning' | 'suggestion';
 
@@ -171,7 +172,7 @@ export function scoreResume(resume: Resume): ResumeScore {
     add('Contact', 'warning', 'No phone number.', 'Recruiters still call. Add a number with the country code.');
   } else if (!PHONE_RE.test(b.phone.trim())) {
     contact -= 6;
-    add('Contact', 'suggestion', 'The phone number format is unusual.', 'Use an international format, e.g. +44 7700 900142.');
+    add('Contact', 'suggestion', 'The phone number format is unusual.', 'Use an international format, e.g. +971 50 123 4567.');
   }
   if (!b.location.trim()) {
     contact -= 8;
@@ -287,7 +288,18 @@ export function scoreResume(resume: Resume): ResumeScore {
     );
   });
 
-  const expectedPages = yearsCovered >= 10 ? 2 : 1;
+  // Gulf CVs carry a personal-details block and usually a photo, and two pages
+  // is the accepted norm from a few years in; the UK/US one-page rule is not.
+  const uae = resume.settings.market === 'uae';
+  const expectedPages = uae
+    ? yearsCovered >= 15
+      ? 3
+      : yearsCovered >= 4
+        ? 2
+        : 1
+    : yearsCovered >= 10
+      ? 2
+      : 1;
   const template = getTemplate(resume.settings.templateId);
   const academic = template.id === 'academic-cv' || template.id === 'federal-detailed';
   if (!academic) {
@@ -362,7 +374,7 @@ export function scoreResume(resume: Resume): ResumeScore {
       'Some applicant tracking systems read columns out of order. For online portals, switch to ATS Classic or Modern Professional and keep this one for direct applications.',
     );
   }
-  if (resume.settings.showPhoto && resume.basics.photo) {
+  if (resume.settings.showPhoto && resume.basics.photo && resume.settings.market !== 'uae') {
     ats -= 10;
     add(
       'ATS',
@@ -411,6 +423,25 @@ export function scoreResume(resume: Resume): ResumeScore {
       'No job advert pasted in.',
       'Paste the advert into the Target role box to see which of its terms your CV is missing. Tailoring per application is the single highest-return edit.',
     );
+  }
+
+  /* --- 8. UAE market --------------------------------------------------- */
+  const uaeChecks = uae ? uaeChecklist(resume) : [];
+  if (uae) {
+    for (const check of uaeChecks) {
+      if (check.status === 'ok') continue;
+      // The phone gap is already reported under Contact when there is no number.
+      if (check.id === 'phone' && !b.phone.trim()) continue;
+      const severity: Severity =
+        check.status === 'risk'
+          ? 'critical'
+          : check.status === 'missing'
+            ? check.weight >= 12
+              ? 'warning'
+              : 'suggestion'
+            : 'suggestion';
+      add('UAE', severity, check.label + '.', check.detail);
+    }
   }
 
   /* --- weighted total --------------------------------------------------- */
@@ -465,6 +496,17 @@ export function scoreResume(resume: Resume): ResumeScore {
       summary: jd ? `${keyword.coverage}% keyword coverage.` : 'No advert pasted yet.',
     },
   ];
+  if (uae) {
+    const ok = uaeChecks.filter((c) => c.status === 'ok').length;
+    const counted = uaeChecks.filter((c) => c.weight > 0).length;
+    categories.push({
+      id: 'uae',
+      label: 'UAE market fit',
+      score: uaeScore(uaeChecks),
+      weight: 14,
+      summary: `${ok}/${counted} Gulf screening checks met${isUaePhone(b.phone) ? ', local number' : ''}.`,
+    });
+  }
 
   const totalWeight = categories.reduce((s, c) => s + c.weight, 0);
   const total = clamp(

@@ -1,0 +1,480 @@
+/* ---------------------------------------------------------------------------
+   UAE & Gulf templates.
+
+   Each takes one device from the region's own visual language — a mashrabiya
+   lattice, an Al Sadu weave, a dune line, a skyline, pearl lustre — and uses
+   it once, at the edge of the page, so the content stays as calm and legible
+   as any other template. Decorative patterns are inline SVG data URIs so they
+   print without a network request.
+--------------------------------------------------------------------------- */
+
+/* U1. Dubai Executive — navy and brushed gold, still ATS-safe. ----------- */
+.tpl-dubai-exec {
+  --uae-gold: #b08d57;
+}
+.tpl-dubai-exec .cv-header--stacked {
+  padding-bottom: 3.2mm;
+  border-bottom: 1.6pt solid var(--cv-accent);
+  box-shadow: 0 1.2mm 0 -0.9mm var(--uae-gold);
+  margin-bottom: calc(var(--cv-section-gap) * 1.1);
+}
+.tpl-dubai-exec .cv-name {
+  font-size: 2.15em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.tpl-dubai-exec .cv-headline {
+  color: var(--uae-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8em;
+  font-weight: 600;
+  margin-top: 0.5em;
+}
+.tpl-dubai-exec .cv-contact {
+  font-size: 0.84em;
+}
+.tpl-dubai-exec .cv-contact__item--fact {
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-dubai-exec .cv-contact__item--fact .cv-icon {
+  color: var(--uae-gold);
+}
+.tpl-dubai-exec .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+  letter-spacing: 0.16em;
+  font-size: 0.86em;
+}
+.tpl-dubai-exec .cv-section__title::before {
+  content: '';
+  flex: none;
+  width: 1.8mm;
+  height: 1.8mm;
+  background: var(--uae-gold);
+  transform: rotate(45deg);
+}
+.tpl-dubai-exec .cv-section__title::after {
+  content: '';
+  flex: 1;
+  height: 0.5pt;
+  background: var(--cv-rule);
+}
+.tpl-dubai-exec .cv-entry__title {
+  color: var(--cv-accent);
+}
+.tpl-dubai-exec .cv-entry__dates {
+  color: var(--uae-gold);
+  font-weight: 600;
+}
+.tpl-dubai-exec .cv-bullets li::marker {
+  color: var(--uae-gold);
+}
+.tpl-dubai-exec .cv-skill-group__label,
+.tpl-dubai-exec .cv-fact__label {
+  color: var(--cv-accent);
+}
+
+/* U2. Gulf Portal — machine-first. ---------------------------------------- */
+.tpl-gulf-portal .cv-header--stacked {
+  border-bottom: 1pt solid var(--cv-text);
+  padding-bottom: 2.5mm;
+}
+.tpl-gulf-portal .cv-name {
+  color: var(--cv-text);
+  font-size: 1.85em;
+}
+.tpl-gulf-portal .cv-headline {
+  color: var(--cv-text);
+  font-weight: 700;
+}
+.tpl-gulf-portal .cv-contact {
+  color: var(--cv-text);
+  gap: 0.2em 0;
+}
+/* Pipes rather than icons or gaps: separators that survive text extraction. */
+.tpl-gulf-portal .cv-contact__item + .cv-contact__item::before {
+  content: '|';
+  margin: 0 0.6em;
+  color: var(--cv-muted);
+}
+.tpl-gulf-portal .cv-section__title {
+  color: var(--cv-text);
+  border-bottom: 0.75pt solid var(--cv-text);
+  padding-bottom: 0.12em;
+  letter-spacing: 0.06em;
+}
+.tpl-gulf-portal .cv-bullets li::marker {
+  color: var(--cv-text);
+}
+
+/* U3. Diwan — formal and bilingual. -------------------------------------- */
+.tpl-diwan {
+  --uae-gold: #a88a4f;
+}
+.tpl-diwan .cv-header--centered {
+  padding-bottom: 3.5mm;
+  border-bottom: 3pt double var(--uae-gold);
+  margin-bottom: calc(var(--cv-section-gap) * 1.2);
+}
+.tpl-diwan .cv-photo img {
+  width: 27mm;
+  height: 27mm;
+  border: 0.8mm solid #fff;
+  box-shadow: 0 0 0 0.5mm var(--uae-gold);
+}
+.tpl-diwan .cv-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.25em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.tpl-diwan .cv-name-ar {
+  color: var(--cv-accent);
+  font-weight: 700;
+  font-size: 1.35em;
+}
+.tpl-diwan .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.78em;
+  color: var(--uae-gold);
+  font-weight: 700;
+}
+.tpl-diwan .cv-section__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--cv-accent-soft);
+  border-inline-start: 1.2mm solid var(--cv-accent);
+  padding: 0.3em 0.7em;
+  letter-spacing: 0.12em;
+  font-size: 0.86em;
+}
+.tpl-diwan .cv-section__title-ar {
+  opacity: 1;
+  font-weight: 700;
+  font-size: 1.12em;
+}
+.tpl-diwan .cv-section__title-sep {
+  display: none;
+}
+.tpl-diwan .cv-entry__dates {
+  color: var(--cv-accent);
+  font-weight: 700;
+}
+.tpl-diwan .cv-fact {
+  border-bottom: 0.5pt dotted var(--cv-rule);
+  padding-bottom: 0.15em;
+}
+
+/* U4. Mashrabiya — lattice band, gold edge, tinted rail. ----------------- */
+.tpl-mashrabiya {
+  --uae-gold: #c9a55a;
+}
+.tpl-mashrabiya .cv-header--band {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='white' stroke-opacity='0.2' stroke-width='0.7'%3E%3Crect x='8' y='8' width='12' height='12'/%3E%3Crect x='8' y='8' width='12' height='12' transform='rotate(45 14 14)'/%3E%3Cpath d='M0 0L5.5 5.5M28 0L22.5 5.5M0 28L5.5 22.5M28 28L22.5 22.5M14 0V5.5M14 28V22.5M0 14H5.5M28 14H22.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 7mm 7mm;
+  border-bottom: 1.3mm solid var(--uae-gold);
+  padding: 10mm 14mm 9mm;
+  margin-bottom: 6mm;
+}
+.tpl-mashrabiya .cv-header--band .cv-photo img {
+  border: 0.9mm solid var(--uae-gold);
+  width: 28mm;
+  height: 28mm;
+}
+.tpl-mashrabiya .cv-name {
+  font-size: 2.3em;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+.tpl-mashrabiya .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78em;
+  color: var(--uae-gold);
+  opacity: 1;
+  font-weight: 700;
+}
+.tpl-mashrabiya .cv-section__title {
+  display: flex;
+  align-items: center;
+  gap: 2.2mm;
+  letter-spacing: 0.14em;
+  font-size: 0.86em;
+}
+/* An eight-point star: a square and the same square turned 45 degrees. */
+.tpl-mashrabiya .cv-section__title::before {
+  content: '';
+  flex: none;
+  width: 2.4mm;
+  height: 2.4mm;
+  background: var(--uae-gold);
+  clip-path: polygon(50% 0, 64% 21%, 85% 15%, 79% 36%, 100% 50%, 79% 64%, 85% 85%, 64% 79%, 50% 100%, 36% 79%, 15% 85%, 21% 64%, 0 50%, 21% 36%, 15% 15%, 36% 21%);
+}
+.tpl-mashrabiya .cv-body--sidebar-right .cv-side {
+  background: var(--cv-accent-soft);
+  border-top: 1mm solid var(--cv-accent);
+  border-radius: 0 0 2mm 2mm;
+  padding: 4.5mm 4.5mm 5mm;
+}
+.tpl-mashrabiya .cv-entry__dates {
+  color: var(--cv-accent);
+  font-weight: 700;
+}
+.tpl-mashrabiya .cv-bullets li::marker {
+  color: var(--uae-gold);
+}
+
+/* U5. Skyline — dusk gradient with the city along its lower edge. -------- */
+.tpl-skyline .cv-header--band {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='80' viewBox='0 0 600 80' preserveAspectRatio='xMidYMax slice'%3E%3Cpolygon fill='white' fill-opacity='0.16' points='0,80 0,58 18,58 18,50 34,50 34,62 48,62 48,44 60,44 60,40 66,40 66,44 78,44 78,60 92,60 92,36 108,36 108,60 120,60 120,52 136,52 136,30 142,26 148,30 148,64 162,64 162,48 180,48 180,66 196,66 196,42 214,42 214,58 228,58 228,34 236,28 244,34 244,62 258,62 258,50 272,50 272,68 290,68 290,46 300,46 300,38 310,38 310,54 330,54 330,40 334,40 334,28 337,28 337,15 339,15 340,0 341,15 343,15 343,28 346,28 346,40 350,40 350,54 362,54 362,32 372,24 382,32 382,60 396,60 396,44 414,44 414,64 432,64 432,38 444,38 444,30 452,30 452,56 466,56 466,48 492,48 492,40 500,36 508,40 508,62 522,62 522,52 540,52 540,66 556,66 556,44 572,44 572,58 588,58 588,50 600,50 600,80'/%3E%3Cpath fill='white' fill-opacity='0.5' d='M540 26a8 8 0 1 0 8.5 11.5a6.2 6.2 0 1 1-8.5-11.5z'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 45%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 60%, rgba(236, 72, 153, 0.28));
+  background-repeat: no-repeat;
+  background-position: bottom center, 0 0, 0 0;
+  background-size: 100% 22mm, 100% 100%, 100% 100%;
+  padding: 11mm 14mm 17mm;
+  margin-bottom: 5mm;
+}
+.tpl-skyline .cv-header--band .cv-photo img {
+  width: 28mm;
+  height: 28mm;
+  border: 0.9mm solid rgba(255, 255, 255, 0.55);
+}
+.tpl-skyline .cv-name {
+  font-size: 2.45em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.tpl-skyline .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.76em;
+  margin-top: 0.55em;
+  font-weight: 600;
+}
+.tpl-skyline .cv-contact__item--fact {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.05em 0.7em;
+}
+.tpl-skyline .cv-section__title {
+  color: var(--cv-accent);
+  letter-spacing: 0.16em;
+  font-size: 0.86em;
+  border-bottom: 1.5pt solid var(--cv-accent);
+  padding-bottom: 0.2em;
+  width: fit-content;
+  padding-inline-end: 6mm;
+}
+.tpl-skyline .cv-entry__dates {
+  background: var(--cv-accent);
+  color: var(--cv-on-accent);
+  padding: 0.08em 0.6em;
+  border-radius: 1mm;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+.tpl-skyline .cv-skill {
+  display: inline-block;
+  border: 0.6pt solid var(--cv-accent-line);
+  border-radius: 1mm;
+  padding: 0.05em 0.55em;
+  margin: 0 0.3em 0.3em 0;
+  font-size: 0.9em;
+}
+.tpl-skyline .cv-skill + .cv-skill::before {
+  content: none;
+}
+
+/* U6. Sadu — a woven border across the top of the sheet. ----------------- */
+.tpl-sadu {
+  padding-top: calc(var(--cv-margin) + 9mm);
+}
+.tpl-sadu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10mm;
+  box-sizing: border-box;
+  border-top: 1.6mm solid #1c1917;
+  border-bottom: 1.6mm solid #1c1917;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='16' viewBox='0 0 24 16'%3E%3Crect width='24' height='16' fill='%238b1e1e'/%3E%3Cpolygon points='12,1 23,8 12,15 1,8' fill='%23f1e4cc'/%3E%3Cpolygon points='12,4 18,8 12,12 6,8' fill='%238b1e1e'/%3E%3Cpolygon points='12,6.3 14.6,8 12,9.7 9.4,8' fill='%231c1917'/%3E%3Cpolygon points='0,0 3,0 0,3' fill='%231c1917'/%3E%3Cpolygon points='24,0 21,0 24,3' fill='%231c1917'/%3E%3Cpolygon points='0,16 3,16 0,13' fill='%231c1917'/%3E%3Cpolygon points='24,16 21,16 24,13' fill='%231c1917'/%3E%3C/svg%3E") repeat-x center / auto 100%, #8b1e1e;
+}
+.tpl-sadu .cv-header--stacked {
+  align-items: center;
+  margin-bottom: 6mm;
+}
+.tpl-sadu .cv-photo img {
+  border-radius: 50%;
+  border: 0.9mm solid var(--cv-accent);
+  outline: 0.5mm solid #1c1917;
+  outline-offset: 0.6mm;
+}
+.tpl-sadu .cv-name {
+  font-size: 2.3em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.tpl-sadu .cv-headline {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.8em;
+  color: var(--cv-text);
+  font-weight: 700;
+}
+.tpl-sadu .cv-body--sidebar-left .cv-side {
+  background: #f7efe3;
+  border-radius: 2mm;
+  padding: 4.5mm;
+  border-top: 1.2mm solid var(--cv-accent);
+}
+.tpl-sadu .cv-section__title {
+  letter-spacing: 0.14em;
+  font-size: 0.86em;
+  padding-bottom: 0.2em;
+  border-bottom: 1pt dashed var(--cv-accent-line);
+}
+.tpl-sadu .cv-entry__dates {
+  color: var(--cv-accent);
+  font-weight: 700;
+}
+
+/* U7. Dune — a sand curve behind the name, rounded rail on the right. ---- */
+.tpl-dune {
+  --uae-sand: #f4e8d6;
+}
+.tpl-dune::before {
+  content: '';
+  position: absolute;
+  top: -58mm;
+  left: -25%;
+  width: 150%;
+  height: 100mm;
+  border-radius: 0 0 50% 50%;
+  background: radial-gradient(ellipse at 35% 100%, var(--cv-accent-soft), transparent 70%), var(--uae-sand);
+  z-index: 0;
+}
+.tpl-dune > * {
+  position: relative;
+  z-index: 1;
+}
+.tpl-dune .cv-header--split {
+  align-items: center;
+  padding-top: 2mm;
+  margin-bottom: 11mm;
+}
+.tpl-dune .cv-photo img {
+  border-radius: 50%;
+  border: 1mm solid #fff;
+  box-shadow: 0 1mm 3mm rgba(120, 72, 32, 0.25);
+}
+.tpl-dune .cv-name {
+  font-size: 2.35em;
+  font-weight: 700;
+}
+.tpl-dune .cv-headline {
+  color: var(--cv-text);
+  font-weight: 600;
+}
+.tpl-dune .cv-contact__item--fact {
+  color: var(--cv-accent);
+  font-weight: 600;
+}
+.tpl-dune .cv-body--sidebar-right .cv-side {
+  background: var(--uae-sand);
+  border-radius: 4mm;
+  padding: 5mm 4.5mm;
+}
+.tpl-dune .cv-section__title {
+  letter-spacing: 0.14em;
+  font-size: 0.86em;
+}
+.tpl-dune .cv-main .cv-section__title::after {
+  content: '';
+  display: block;
+  width: 10mm;
+  height: 1mm;
+  border-radius: 1mm;
+  background: var(--cv-accent);
+  margin-top: 0.3em;
+}
+.tpl-dune .cv-skill {
+  display: inline-block;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.08em 0.65em;
+  margin: 0 0.25em 0.3em 0;
+  font-size: 0.88em;
+}
+.tpl-dune .cv-skill + .cv-skill::before {
+  content: none;
+}
+.tpl-dune .cv-entry__dates {
+  color: var(--cv-accent);
+  font-weight: 700;
+}
+
+/* U8. Pearl — lustre, a ringed portrait, headings strung on pearls. ------ */
+.tpl-pearl {
+  background-image: linear-gradient(180deg, #f3f5f8 0, #ffffff 70mm);
+  background-repeat: no-repeat;
+}
+.tpl-pearl .cv-header--centered {
+  margin-bottom: calc(var(--cv-section-gap) * 1.3);
+}
+.tpl-pearl .cv-photo img {
+  width: 28mm;
+  height: 28mm;
+  border: 1mm solid #fff;
+  box-shadow: 0 0 0 0.6mm #d9dee5, 0 0 0 1.2mm #fff, 0 0 0 1.6mm #c3ccd6, 0 1.5mm 4mm rgba(63, 85, 102, 0.25);
+}
+.tpl-pearl .cv-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  font-size: 2.35em;
+  letter-spacing: 0.01em;
+}
+.tpl-pearl .cv-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.08em;
+}
+.tpl-pearl .cv-section__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5mm;
+  text-align: center;
+  letter-spacing: 0.24em;
+  font-size: 0.82em;
+  font-weight: 700;
+  margin-bottom: 0.7em;
+}
+.tpl-pearl .cv-section__title::before,
+.tpl-pearl .cv-section__title::after {
+  content: '';
+  flex: none;
+  width: 9mm;
+  height: 1.6mm;
+  background:
+    radial-gradient(circle at 35% 35%, #fff 0 0.25mm, #cfd6de 0.7mm, #9aa7b4 0.8mm, transparent 0.82mm) 0 0 / 3mm 1.6mm repeat-x;
+}
+.tpl-pearl .cv-entry__dates {
+  font-style: italic;
+}
+.tpl-pearl .cv-summary {
+  text-align: center;
+  font-size: 1.02em;
+}
+.tpl-pearl .cv-bullets li::marker {
+  content: '◦  ';
+  color: var(--cv-accent);
+}

@@ -56,6 +56,36 @@ export function DesignPanel() {
   return (
     <div className="design">
       <section className="panel-block">
+        <h3>Market</h3>
+        <Field label="Written for">
+          <select
+            className="input"
+            value={s.market}
+            onChange={(e) => store.setSettings({ market: e.target.value as 'uae' | 'international' })}
+          >
+            <option value="uae">UAE & GCC — visa, nationality, photo expected</option>
+            <option value="international">International — UK, US, EU conventions</option>
+          </select>
+        </Field>
+        <Checkbox
+          label="Bilingual section headings (English + Arabic)"
+          checked={s.bilingualHeadings}
+          onChange={(v) => store.setSettings({ bilingualHeadings: v })}
+        />
+        <Checkbox
+          label="Show nationality, visa, notice period and licence in the header"
+          checked={s.showKeyFacts}
+          onChange={(v) => store.setSettings({ showKeyFacts: v })}
+        />
+        {s.bilingualHeadings && template.atsSafe ? (
+          <p className="note">
+            Arabic headings read well to people, but some portal parsers match English headings
+            only. For portal uploads, turn this off.
+          </p>
+        ) : null}
+      </section>
+
+      <section className="panel-block">
         <h3>Typography & colour</h3>
         <div className="grid grid--2">
           <Field label="Font">

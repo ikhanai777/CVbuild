@@ -2,7 +2,12 @@
  * JSON import/export — the escape hatch. A CV the user can round-trip is a CV
  * they can back up, version and move between machines without losing work.
  */
-import { DEFAULT_SECTION_ORDER, RESUME_SCHEMA_VERSION, type Resume } from '../../types/resume';
+import {
+  DEFAULT_SECTION_ORDER,
+  RESUME_SCHEMA_VERSION,
+  type Resume,
+  type SectionId,
+} from '../../types/resume';
 import { emptyResume, DEFAULT_SETTINGS } from '../../data/defaults';
 import { suggestedFileName } from './docx';
 
@@ -109,6 +114,12 @@ export function migrateResume(input: unknown): Resume {
     settings.sectionTitles = {};
   }
 
+  settings.sectionOrder = withBuiltInSections(settings.sectionOrder);
+  if (Array.isArray(settings.userSectionOrder)) {
+    settings.userSectionOrder = withBuiltInSections(settings.userSectionOrder);
+  }
+  if (settings.market !== 'uae' && settings.market !== 'international') settings.market = 'uae';
+
   const arr = <T,>(value: unknown): T[] => (Array.isArray(value) ? (value as T[]) : []);
 
   return {
@@ -116,6 +127,7 @@ export function migrateResume(input: unknown): Resume {
     meta: { ...base.meta, ...(raw.meta ?? {}) },
     settings,
     basics: { ...base.basics, ...(raw.basics ?? {}) },
+    personal: { ...base.personal, ...(raw.personal ?? {}) },
     experience: arr(raw.experience),
     education: arr(raw.education),
     skills: arr(raw.skills),
@@ -129,6 +141,22 @@ export function migrateResume(input: unknown): Resume {
     references: arr(raw.references),
     customSections: arr(raw.customSections),
   };
+}
+
+/**
+ * Documents saved before a built-in section existed have no slot for it in
+ * their order, so it would never render. Each missing key is slotted in after
+ * the section that precedes it in the default order, which puts it where a new
+ * document would have it without disturbing anything the user arranged.
+ */
+export function withBuiltInSections(order: SectionId[]): SectionId[] {
+  const next = [...order];
+  DEFAULT_SECTION_ORDER.forEach((key, index) => {
+    if (next.includes(key)) return;
+    const before = DEFAULT_SECTION_ORDER.slice(0, index).reverse().find((k) => next.includes(k));
+    next.splice(before ? next.indexOf(before) + 1 : 0, 0, key);
+  });
+  return next;
 }
 
 export function parseJsonResume(text: string): Resume {

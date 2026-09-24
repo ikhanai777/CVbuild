@@ -13,6 +13,14 @@ import { askConfirm, askNotice, askText } from './dialogs';
 import { SUMMARY_TEMPLATES } from '../data/playbook';
 import { hasMetric, wordCount } from '../lib/analysis/language';
 import { dateRange } from '../lib/format';
+import {
+  AVAILABILITY_OPTIONS,
+  LICENCE_OPTIONS,
+  NATIONALITY_SUGGESTIONS,
+  VISA_OPTIONS,
+  formatUaePhone,
+  isUaeNational,
+} from '../lib/uae';
 
 function Group({
   id,
@@ -102,8 +110,9 @@ function PhotoField() {
           </button>
         ) : null}
         <p className="muted small">
-          Standard in much of Europe; in the UK, US, Canada and Australia leave it off — it invites
-          bias screening and some systems reject it.
+          {resume.settings.market === 'uae'
+            ? 'Expected in the UAE and wider Gulf — a head-and-shoulders shot, plain background, business attire. Photo-friendly templates show it; ATS-safe ones leave it out for portal uploads.'
+            : 'Standard in much of Europe; in the UK, US, Canada and Australia leave it off — it invites bias screening and some systems reject it.'}
         </p>
       </div>
     </div>
@@ -113,14 +122,19 @@ function PhotoField() {
 export function ContentEditor() {
   const resume = useResume();
   const store = useStore();
-  const [open, setOpen] = useState<Record<string, boolean>>({ basics: true, experience: true });
+  const [open, setOpen] = useState<Record<string, boolean>>({
+    basics: true,
+    personal: true,
+    experience: true,
+  });
   const toggle = (id: string) => setOpen((o) => ({ ...o, [id]: !o[id] }));
 
   const summaryWords = wordCount(resume.basics.summary);
+  const formattedPhone = formatUaePhone(resume.basics.phone);
 
   return (
     <div className="editor">
-      <Group id="basics" title="Personal details" open={!!open.basics} onToggle={() => toggle('basics')}>
+      <Group id="basics" title="Name & contact" open={!!open.basics} onToggle={() => toggle('basics')}>
         <div className="grid grid--2">
           <Field label="Full name">
             <TextInput
@@ -148,14 +162,33 @@ export function ContentEditor() {
             <TextInput
               value={resume.basics.phone}
               onChange={(v) => store.setBasics({ phone: v })}
-              placeholder="+44 7700 900142"
+              placeholder="+971 50 123 4567"
             />
+            {formattedPhone && formattedPhone !== resume.basics.phone.trim() ? (
+              <button
+                type="button"
+                className="link-btn small"
+                onClick={() => store.setBasics({ phone: formattedPhone })}
+              >
+                Format as {formattedPhone}
+              </button>
+            ) : null}
           </Field>
           <Field label="Location">
             <TextInput
               value={resume.basics.location}
               onChange={(v) => store.setBasics({ location: v })}
-              placeholder="London, UK"
+              placeholder="Dubai, UAE"
+              suggestions={[
+                'Dubai, UAE',
+                'Abu Dhabi, UAE',
+                'Sharjah, UAE',
+                'Ajman, UAE',
+                'Ras Al Khaimah, UAE',
+                'Fujairah, UAE',
+                'Umm Al Quwain, UAE',
+                'Al Ain, UAE',
+              ]}
             />
           </Field>
           <Field label="Website / portfolio">
@@ -181,10 +214,102 @@ export function ContentEditor() {
           </Field>
         </div>
         <p className="muted small">
-          City and country is enough — a full street address, date of birth or marital status is
-          never asked for in most English-speaking markets and is a needless privacy exposure.
+          {resume.settings.market === 'uae'
+            ? 'Emirate and country is enough — "Dubai, UAE". Never a street address, and never your Emirates ID or passport number.'
+            : 'City and country is enough — a full street address, date of birth or marital status is never asked for in most English-speaking markets and is a needless privacy exposure.'}
         </p>
         <PhotoField />
+      </Group>
+
+      <Group
+        id="personal"
+        title={resume.settings.market === 'uae' ? 'Visa & personal details (UAE)' : 'Personal details'}
+        description={
+          resume.settings.market === 'uae'
+            ? 'What UAE recruiters screen on before anything else. Nationality, visa status and notice period decide whether an offer is even possible — state them plainly.'
+            : 'Optional outside the Gulf. In the UK, US, Canada and Australia leave these blank — employers do not ask and cannot use them.'
+        }
+        open={!!open.personal}
+        onToggle={() => toggle('personal')}
+      >
+        <div className="grid grid--2">
+          <Field label="Nationality">
+            <TextInput
+              value={resume.personal.nationality}
+              onChange={(v) => store.setPersonal({ nationality: v })}
+              placeholder="Indian / Emirati / British"
+              suggestions={NATIONALITY_SUGGESTIONS}
+            />
+          </Field>
+          <Field label="Visa status">
+            <TextInput
+              value={resume.personal.visaStatus}
+              onChange={(v) => store.setPersonal({ visaStatus: v })}
+              placeholder={
+                isUaeNational(resume.personal.nationality)
+                  ? 'Not needed for UAE Nationals'
+                  : 'Employment visa (transferable)'
+              }
+              suggestions={VISA_OPTIONS}
+            />
+          </Field>
+          <Field label="Notice period / availability">
+            <TextInput
+              value={resume.personal.availability}
+              onChange={(v) => store.setPersonal({ availability: v })}
+              placeholder="30 days notice"
+              suggestions={AVAILABILITY_OPTIONS}
+            />
+          </Field>
+          <Field label="Driving licence">
+            <TextInput
+              value={resume.personal.drivingLicence}
+              onChange={(v) => store.setPersonal({ drivingLicence: v })}
+              placeholder="UAE driving licence — light vehicle"
+              suggestions={LICENCE_OPTIONS}
+            />
+          </Field>
+          <Field label="Name in Arabic (optional)">
+            <TextInput
+              value={resume.personal.nameArabic}
+              onChange={(v) => store.setPersonal({ nameArabic: v })}
+              placeholder="الاسم بالعربية"
+              dir="rtl"
+              lang="ar"
+            />
+          </Field>
+          <Field label="Date of birth (optional)">
+            <TextInput
+              value={resume.personal.dateOfBirth}
+              onChange={(v) => store.setPersonal({ dateOfBirth: v })}
+              placeholder="12 March 1992"
+            />
+          </Field>
+          <Field label="Gender (optional)">
+            <TextInput
+              value={resume.personal.gender}
+              onChange={(v) => store.setPersonal({ gender: v })}
+              suggestions={['Female', 'Male']}
+            />
+          </Field>
+          <Field label="Marital status (optional)">
+            <TextInput
+              value={resume.personal.maritalStatus}
+              onChange={(v) => store.setPersonal({ maritalStatus: v })}
+              suggestions={['Single', 'Married']}
+            />
+          </Field>
+        </div>
+        <Checkbox
+          label="Show nationality, visa, notice period and licence in the header"
+          checked={resume.settings.showKeyFacts}
+          onChange={(v) => store.setSettings({ showKeyFacts: v })}
+        />
+        <p className="muted small">
+          Date of birth, gender and marital status are still common on Gulf CVs but never required —
+          leave them blank if you prefer. Never include religion, your Emirates ID or passport
+          number, or salary expectations.
+        </p>
       </Group>
 
       <Group

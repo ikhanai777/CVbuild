@@ -1,6 +1,7 @@
 import {
   DEFAULT_SECTION_ORDER,
   RESUME_SCHEMA_VERSION,
+  type PersonalDetails,
   type Resume,
   type ResumeSettings,
 } from '../types/resume';
@@ -22,9 +23,25 @@ export const DEFAULT_SETTINGS: ResumeSettings = {
   hiddenSections: ['publications', 'volunteer', 'references', 'awards'],
   sectionTitles: {},
   sectionPreset: null,
+  market: 'uae',
+  showKeyFacts: true,
+  bilingualHeadings: false,
   userSectionOrder: null,
   userHiddenSections: null,
 };
+
+export function emptyPersonal(): PersonalDetails {
+  return {
+    nationality: '',
+    visaStatus: '',
+    availability: '',
+    drivingLicence: '',
+    dateOfBirth: '',
+    gender: '',
+    maritalStatus: '',
+    nameArabic: '',
+  };
+}
 
 export function emptyResume(name = 'Untitled CV'): Resume {
   const now = new Date().toISOString();
@@ -50,6 +67,7 @@ export function emptyResume(name = 'Untitled CV'): Resume {
       photo: '',
       summary: '',
     },
+    personal: emptyPersonal(),
     experience: [],
     education: [],
     skills: [],

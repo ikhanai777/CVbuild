@@ -8,7 +8,7 @@
 import { create } from 'zustand';
 import type { Resume, ResumeSettings, SectionId } from '../types/resume';
 import { emptyResume } from '../data/defaults';
-import { sampleResume } from '../data/sampleResume';
+import { sampleResumeUae } from '../data/sampleResumeUae';
 import { adoptSectionLayout, applyTemplate } from '../templates/applyTemplate';
 import { migrateResume } from '../lib/export/json';
 import { uid } from '../lib/id';
@@ -46,6 +46,9 @@ interface AppState {
   commit: (mutate: (draft: Resume) => void, options?: { history?: boolean }) => void;
 
   setBasics: (patch: Partial<Resume['basics']>) => void;
+  setPersonal: (patch: Partial<Resume['personal']>) => void;
+  /** Adds skills to a named group, creating the group if needed. Skips duplicates. */
+  addSkills: (category: string, items: string[]) => void;
   setMeta: (patch: Partial<Resume['meta']>) => void;
   setSettings: (patch: Partial<ResumeSettings>) => void;
   setTemplate: (templateId: string) => void;
@@ -148,7 +151,7 @@ function load(): PersistedState {
   } catch {
     // A corrupt payload should never block the app from opening.
   }
-  const first = sampleResume();
+  const first = sampleResumeUae();
   return { resumes: [first], activeId: first.meta.id };
 }
 
@@ -201,6 +204,21 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setBasics: (patch) => get().commit((d) => Object.assign(d.basics, patch)),
+  setPersonal: (patch) => get().commit((d) => Object.assign(d.personal, patch)),
+
+  addSkills: (category, items) =>
+    get().commit((d) => {
+      const existing = new Set(d.skills.flatMap((g) => g.items.map((i) => i.trim().toLowerCase())));
+      const fresh = items.filter((i) => i.trim() && !existing.has(i.trim().toLowerCase()));
+      if (!fresh.length) return;
+      let group = d.skills.find((g) => g.category.trim().toLowerCase() === category.trim().toLowerCase());
+      if (!group) {
+        group = { id: uid('sk'), category, items: [] };
+        d.skills.push(group);
+      }
+      group.items.push(...fresh);
+      d.settings.hiddenSections = d.settings.hiddenSections.filter((s) => s !== 'skills');
+    }),
   setMeta: (patch) => get().commit((d) => Object.assign(d.meta, patch)),
   setSettings: (patch) => get().commit((d) => Object.assign(d.settings, patch)),
 

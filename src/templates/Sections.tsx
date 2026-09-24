@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Resume, SectionId, SectionKey } from '../types/resume';
-import { SECTION_LABELS } from '../types/resume';
+import { PERSONAL_FIELDS, SECTION_LABELS, SECTION_LABELS_AR } from '../types/resume';
+import { keyFacts } from '../lib/uae';
 import { dateRange, joinNonEmpty, prettyUrl } from '../lib/format';
 
 /**
@@ -19,19 +20,52 @@ export function sectionTitle(resume: Resume, id: SectionId): string {
   return SECTION_LABELS[id as SectionKey] ?? id;
 }
 
+/** The Arabic heading shown beside the English one on bilingual CVs, or ''. */
+export function arabicSectionTitle(resume: Resume, id: SectionId): string {
+  if (!resume.settings.bilingualHeadings || id.startsWith('custom:')) return '';
+  return SECTION_LABELS_AR[id as SectionKey] ?? '';
+}
+
+/**
+ * The personal-details rows that still need printing: anything already shown
+ * as a key fact in the header is left out rather than said twice.
+ */
+export function personalRows(resume: Resume): Array<{ label: string; value: string }> {
+  const inHeader = new Set(keyFacts(resume).map((f) => f.key));
+  return PERSONAL_FIELDS.filter((f) => !inHeader.has(f.key))
+    .map((f) => ({ label: f.label, value: resume.personal[f.key].trim() }))
+    .filter((row) => row.value);
+}
+
 function Section({
   id,
   title,
+  titleAr = '',
   children,
 }: {
   id: SectionId;
   title: string;
+  titleAr?: string;
   children: ReactNode;
 }) {
   const modifier = id.startsWith('custom:') ? 'custom' : id;
   return (
     <section className={`cv-section cv-section--${modifier}`} data-section={id}>
-      <h2 className="cv-section__title">{title}</h2>
+      <h2 className="cv-section__title">
+        {titleAr ? (
+          <>
+            <span className="cv-section__title-en">{title}</span>
+            <span className="cv-section__title-sep" aria-hidden="true">
+              |
+            </span>
+            <span className="cv-section__title-ar" lang="ar" dir="rtl">
+              {titleAr}
+            </span>
+          </>
+        ) : (
+          title
+        )}
+      </h2>
       <div className="cv-section__body">{children}</div>
     </section>
   );
@@ -83,12 +117,13 @@ function EntryHead({
 export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
   if (resume.settings.hiddenSections.includes(id)) return null;
   const title = sectionTitle(resume, id);
+  const titleAr = arabicSectionTitle(resume, id);
 
   if (id.startsWith('custom:')) {
     const custom = resume.customSections.find((c) => `custom:${c.id}` === id);
     if (!custom || !custom.entries.length) return null;
     return (
-      <Section key={id} id={id} title={title}>
+      <Section key={id} id={id} title={title} titleAr={titleAr}>
         {custom.entries.map((entry) => (
           <article className="cv-entry" key={entry.id}>
             <EntryHead title={entry.title} subtitle={entry.subtitle} meta={entry.date} />
@@ -106,7 +141,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'summary': {
       if (!resume.basics.summary.trim()) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <p className="cv-summary">{resume.basics.summary}</p>
         </Section>
       );
@@ -115,7 +150,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'experience': {
       if (!resume.experience.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           {resume.experience.map((job) => (
             <article className="cv-entry" key={job.id}>
               <EntryHead
@@ -134,7 +169,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'education': {
       if (!resume.education.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           {resume.education.map((ed) => (
             <article className="cv-entry" key={ed.id}>
               <EntryHead
@@ -154,7 +189,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
       const groups = resume.skills.filter((g) => g.items.filter(Boolean).length);
       if (!groups.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <div className="cv-skills">
             {groups.map((group) => (
               <div className="cv-skill-group" key={group.id}>
@@ -178,7 +213,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'projects': {
       if (!resume.projects.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           {resume.projects.map((p) => (
             <article className="cv-entry" key={p.id}>
               <EntryHead
@@ -197,7 +232,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'certifications': {
       if (!resume.certifications.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <ul className="cv-list">
             {resume.certifications.map((c) => (
               <li key={c.id}>
@@ -214,7 +249,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'awards': {
       if (!resume.awards.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           {resume.awards.map((a) => (
             <article className="cv-entry cv-entry--tight" key={a.id}>
               <EntryHead title={a.title} subtitle={a.issuer} meta={a.date} />
@@ -228,7 +263,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'publications': {
       if (!resume.publications.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <ol className="cv-publications">
             {resume.publications.map((p) => (
               <li key={p.id}>
@@ -247,7 +282,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'languages': {
       if (!resume.languages.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <ul className="cv-list cv-list--inline">
             {resume.languages.map((l) => (
               <li key={l.id}>
@@ -263,7 +298,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'volunteer': {
       if (!resume.volunteer.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           {resume.volunteer.map((v) => (
             <article className="cv-entry" key={v.id}>
               <EntryHead
@@ -283,7 +318,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
       const items = resume.interests.filter(Boolean);
       if (!items.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <p className="cv-inline-list">{items.join(' · ')}</p>
         </Section>
       );
@@ -292,7 +327,7 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
     case 'references': {
       if (!resume.references.length) return null;
       return (
-        <Section key={id} id={id} title={title}>
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
           <div className="cv-references">
             {resume.references.map((r) => (
               <div className="cv-reference" key={r.id}>
@@ -304,6 +339,23 @@ export function renderSection(resume: Resume, id: SectionId): ReactNode | null {
               </div>
             ))}
           </div>
+        </Section>
+      );
+    }
+
+    case 'personal': {
+      const rows = personalRows(resume);
+      if (!rows.length) return null;
+      return (
+        <Section key={id} id={id} title={title} titleAr={titleAr}>
+          <dl className="cv-facts">
+            {rows.map((row) => (
+              <div className="cv-fact" key={row.label}>
+                <dt className="cv-fact__label">{row.label}</dt>
+                <dd className="cv-fact__value">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
         </Section>
       );
     }

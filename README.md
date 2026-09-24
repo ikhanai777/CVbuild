@@ -1,7 +1,8 @@
-# CVBuild
+# CVBuild UAE
 
-A CV / resume builder with 40 print-ready templates, a writing coach built from
-recruiter-side guidance, and export to PDF and Word.
+A CV builder for the UAE job market: 48 print-ready templates, including eight
+designed for the Gulf, a writing coach built from recruiter-side guidance, a
+UAE market checker, and export to PDF and Word.
 
 Start from scratch or import a CV you already have — PDF, Word, plain text or
 JSON — and the app parses it into structured fields you can edit, restyle and
@@ -11,13 +12,82 @@ data leaves the machine.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 52 tests
+npm test         # 76 tests
 npm run build
 ```
 
 ---
 
 ## What it does
+
+### Built for the UAE market
+
+A CV that works in London can fail in Dubai for reasons unrelated to its
+bullets. UAE recruiters screen on nationality, visa status and notice period
+before they read anything else, call a +971 number before they email, and in
+regulated sectors cannot hire without a licence. The app is set up for that by
+default. The **Market** setting switches between *UAE & GCC* and
+*International* conventions.
+
+- **Visa & personal details.** Nationality, visa status, notice period, driving
+  licence, and optional date of birth, gender and marital status. Each field
+  offers Gulf-specific suggestions, such as *Employment visa (transferable)*,
+  *Golden Visa*, *Visit visa — available to convert* or *30 days notice*.
+  The four screening facts can print in the header next to the contact
+  details. The rest go into a **Personal Details** section, which moves into
+  the rail on every two-column template.
+- **Arabic support.** Your name in Arabic script under the Latin one, and
+  optional **bilingual section headings**, for example *Experience | الخبرة
+  العملية*, set in Tajawal. Both carry into the Word export with proper
+  right-to-left runs.
+- **+971 phone formatting.** Local, `00971` and `+971` numbers are normalised
+  to `+971 50 123 4567` with one click. Foreign numbers are never rewritten.
+- **UAE Toolkit tab.** A readiness checklist with its own score, covering:
+  - visa and nationality
+  - notice period
+  - the emirate named in your location, or a relocation plan if you are
+    overseas
+  - a local number
+  - languages
+  - a photo
+  - a regulator licence check for your profession: DHA/DOH/MOHAP for
+    healthcare, KHDA/ADEK/MOE for teaching, Society of Engineers, RERA for
+    brokers, ACCA/CPA plus VAT/Corporate Tax for finance, NEBOSH/OSHAD for HSE
+  - degree attestation
+  - Emiratisation guidance for UAE Nationals
+  - items that should never be on a CV: an Emirates ID or passport number,
+    religion, or salary expectations
+- **Sector packs** for 11 UAE sectors, from banking and DIFC, real estate and
+  hospitality to healthcare, education, energy, government and technology.
+  Each pack lists the keywords Gulf recruiters search for (tap one to add it to
+  your skills), the credentials worth naming, and a summary scaffold in the
+  market's vocabulary.
+- **Where to apply.** How to treat LinkedIn, Bayt, GulfTalent, Naukrigulf,
+  employer portals, MOHRE-licensed agencies and Nafis.
+- **Scoring by market.** In UAE mode the Review score adds a *UAE market fit*
+  category. It does not penalise a photo, which is expected in the Gulf. It
+  also accepts two pages from about four years of experience, and three for
+  senior careers.
+- **Import of Gulf CVs.** The parser recognises *Personal Details* blocks, reads
+  `Nationality: … | Visa Status: …` pairs wherever they appear, and picks up an
+  Arabic name from the header.
+
+### UAE & Gulf templates
+
+| Template | Idea | ATS-safe |
+|---|---|---|
+| **Dubai Executive** | Navy and brushed gold, a double rule, screening facts beside the contacts | ✅ |
+| **Gulf Portal** | Plain and machine-first, for Bayt, GulfTalent, Naukrigulf and employer portals | ✅ |
+| **Diwan** | Formal and bilingual: English and Arabic headings, centred portrait, personal details after the profile. Written for government and semi-government roles | ✖ |
+| **Mashrabiya** | A header band with an eight-point lattice, a gold edge and a tinted rail | ✖ |
+| **Skyline** | A dusk-gradient banner with a city skyline along its lower edge | ✖ |
+| **Sadu** | A woven Al Sadu border across the top of the page, over a warm rail | ✖ |
+| **Dune** | Sand and terracotta, a dune curve behind the name, a rounded right rail | ✖ |
+| **Pearl** | A pearlescent wash, a ringed portrait and headings strung on pearls | ✖ |
+
+Decorative patterns are inline SVG, so they print without network access. The
+usual approach is to send two versions: a designed template to a hiring manager
+directly, and Gulf Portal or Dubai Executive to portals.
 
 ### Import an existing CV
 
@@ -272,9 +342,9 @@ losing anything.
 npm test
 ```
 
-52 tests covering the CV parser (headings, contacts, entry splitting, date
+76 tests covering the CV parser (headings, contacts, entry splitting, date
 normalisation), the scorecard and language rules, keyword matching, template
-switching, Word generation for all 40 templates, and JSON round-tripping.
+switching, Word generation for all 40 templates, JSON round-tripping, and the UAE rules (phone formatting, key facts, the market checklist, licence and sensitive-data checks, Gulf CV import and migration of older saved CVs).
 
 ## Notes and limits
 

@@ -12,7 +12,9 @@ import { applyTemplate } from '../templates/applyTemplate';
 export function TemplateGallery() {
   const resume = useResume();
   const setTemplate = useStore((s) => s.setTemplate);
-  const [filter, setFilter] = useState<TemplateCategory | 'All' | 'ATS-safe only'>('All');
+  const [filter, setFilter] = useState<TemplateCategory | 'All' | 'ATS-safe only'>(
+    resume.settings.market === 'uae' ? 'UAE & Gulf' : 'All',
+  );
 
   const visible = useMemo(() => {
     if (filter === 'All') return TEMPLATES;

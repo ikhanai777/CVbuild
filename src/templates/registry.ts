@@ -1,6 +1,7 @@
 import type { ResumeSettings, SectionId } from '../types/resume';
 
 export type TemplateCategory =
+  | 'UAE & Gulf'
   | 'ATS & classic'
   | 'Modern professional'
   | 'Two-column'
@@ -48,7 +49,213 @@ export interface TemplateDefinition {
 
 const SIDEBAR_DEFAULT: SectionId[] = ['skills', 'languages', 'certifications', 'interests'];
 
-export const TEMPLATES: TemplateDefinition[] = [
+/**
+ * Designed for the UAE and wider Gulf market: personal details and key facts
+ * on by default, photo-friendly where the layout allows, and — in Diwan —
+ * bilingual English/Arabic headings for government and semi-government roles.
+ * Two of them (Dubai Executive, Gulf Portal) stay ATS-safe for Bayt, LinkedIn,
+ * GulfTalent and employer portals.
+ */
+const UAE_TEMPLATES: TemplateDefinition[] = [
+  {
+    id: 'dubai-executive',
+    name: 'Dubai Executive',
+    category: 'UAE & Gulf',
+    description:
+      'Navy and brushed gold, a double rule under the name and nationality, visa and notice period set right beside the contact details. Polished enough for a DIFC partner, and still a single parseable column.',
+    bestFor: ['Banking & DIFC', 'Senior management', 'Portals and direct'],
+    atsSafe: true,
+    layout: 'single',
+    header: 'stacked',
+    className: 'tpl-dubai-exec',
+    defaults: {
+      accentColor: '#0b2545',
+      fontFamily: 'Montserrat',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: false,
+      showKeyFacts: true,
+      bilingualHeadings: false,
+      lineHeight: 1.38,
+      margin: 16,
+    },
+  },
+  {
+    id: 'gulf-portal',
+    name: 'Gulf Portal',
+    category: 'UAE & Gulf',
+    description:
+      'Built to be read by a machine first: plain headings, no icons, no photo, every Gulf screening fact in the text layer. The one to upload to Bayt, GulfTalent, Naukrigulf, Indeed and employer career sites.',
+    bestFor: ['Bayt & GulfTalent', 'Large employers', 'Government portals'],
+    atsSafe: true,
+    layout: 'single',
+    header: 'stacked',
+    className: 'tpl-gulf-portal',
+    defaults: {
+      accentColor: '#1f2937',
+      fontFamily: 'Arial',
+      uppercaseHeadings: true,
+      showIcons: false,
+      showPhoto: false,
+      showKeyFacts: true,
+      bilingualHeadings: false,
+      margin: 17,
+    },
+  },
+  {
+    id: 'diwan-formal',
+    name: 'Diwan',
+    category: 'UAE & Gulf',
+    description:
+      'The formal bilingual CV: every heading in English and Arabic, your name in both scripts, a centred portrait and personal details straight after the profile. Written for federal, local government and semi-government applications.',
+    bestFor: ['Government & semi-gov', 'UAE Nationals', 'Formal applications'],
+    atsSafe: false,
+    layout: 'single',
+    header: 'centered',
+    className: 'tpl-diwan',
+    defaults: {
+      accentColor: '#14532d',
+      fontFamily: 'Lato',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: false,
+      bilingualHeadings: true,
+      sectionSpacing: 11,
+      margin: 17,
+      sectionOrder: [
+        'summary',
+        'personal',
+        'experience',
+        'education',
+        'certifications',
+        'skills',
+        'languages',
+        'awards',
+        'projects',
+        'publications',
+        'volunteer',
+        'interests',
+        'references',
+      ],
+    },
+  },
+  {
+    id: 'mashrabiya',
+    name: 'Mashrabiya',
+    category: 'UAE & Gulf',
+    description:
+      'A header band screened with the eight-point lattice of a mashrabiya window, edged in gold, over a tinted rail of skills, languages and personal details. Heritage without a single cliché image.',
+    bestFor: ['Hospitality & tourism', 'Culture & events', 'Client-facing roles'],
+    atsSafe: false,
+    layout: 'sidebar-right',
+    header: 'band',
+    className: 'tpl-mashrabiya',
+    sidebarSections: ['personal', 'skills', 'languages', 'certifications', 'interests'],
+    sidebarWidth: '31%',
+    defaults: {
+      accentColor: '#0f4c5c',
+      fontFamily: 'Lato',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: false,
+      margin: 15,
+    },
+  },
+  {
+    id: 'skyline',
+    name: 'Skyline',
+    category: 'UAE & Gulf',
+    description:
+      'A deep dusk-gradient banner with a city skyline rising along its lower edge — towers, a spire, a crescent of light. Confident and unmistakably Dubai, with a clean single column underneath.',
+    bestFor: ['Real estate & sales', 'Marketing & media', 'Tech & startups'],
+    atsSafe: false,
+    layout: 'single',
+    header: 'band',
+    className: 'tpl-skyline',
+    defaults: {
+      accentColor: '#1e1b4b',
+      fontFamily: 'Montserrat',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: true,
+      margin: 16,
+    },
+  },
+  {
+    id: 'sadu-weave',
+    name: 'Sadu',
+    category: 'UAE & Gulf',
+    description:
+      'A woven Al Sadu border — the Bedouin textile on UNESCO\'s heritage list — runs across the top of the page, over a warm tinted rail. Rich and crafted, with the content kept strictly calm.',
+    bestFor: ['Arts, culture & education', 'Government & heritage', 'HR & people'],
+    atsSafe: false,
+    layout: 'sidebar-left',
+    header: 'stacked',
+    className: 'tpl-sadu',
+    sidebarSections: ['personal', 'skills', 'languages', 'education', 'certifications', 'interests'],
+    sidebarWidth: '33%',
+    defaults: {
+      accentColor: '#7f1d1d',
+      fontFamily: 'Source Sans',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: true,
+      margin: 14,
+    },
+  },
+  {
+    id: 'desert-dune',
+    name: 'Dune',
+    category: 'UAE & Gulf',
+    description:
+      'Sand and terracotta, with a soft dune curve sweeping behind the name and a rounded rail on the right. Warm and modern — the most approachable of the Gulf designs.',
+    bestFor: ['Retail & FMCG', 'Healthcare & wellness', 'Operations & admin'],
+    atsSafe: false,
+    layout: 'sidebar-right',
+    header: 'split',
+    className: 'tpl-dune',
+    sidebarSections: ['personal', 'skills', 'languages', 'certifications', 'interests'],
+    sidebarWidth: '31%',
+    defaults: {
+      accentColor: '#9a4f24',
+      fontFamily: 'Lato',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: true,
+      margin: 15,
+    },
+  },
+  {
+    id: 'pearl-luxe',
+    name: 'Pearl',
+    category: 'UAE & Gulf',
+    description:
+      'Named for the Gulf\'s first industry: a pearlescent wash, a portrait set in a lustre ring and headings strung on three small pearls. Quiet luxury for roles where presentation is part of the job.',
+    bestFor: ['Luxury retail & hospitality', 'Aviation & cabin crew', 'Executive assistants'],
+    atsSafe: false,
+    layout: 'single',
+    header: 'centered',
+    className: 'tpl-pearl',
+    defaults: {
+      accentColor: '#3f5566',
+      fontFamily: 'Lato',
+      uppercaseHeadings: true,
+      showIcons: true,
+      showPhoto: true,
+      showKeyFacts: true,
+      lineHeight: 1.4,
+      sectionSpacing: 12,
+      margin: 18,
+    },
+  },
+];
+
+const BASE_TEMPLATES: TemplateDefinition[] = [
   {
     id: 'ats-classic',
     name: 'ATS Classic',
@@ -877,6 +1084,16 @@ export const TEMPLATES: TemplateDefinition[] = [
   },
 ];
 
+/**
+ * Every two-column design gets the personal-details block in its rail, where
+ * short label/value rows read naturally, unless it already placed it.
+ */
+export const TEMPLATES: TemplateDefinition[] = [...UAE_TEMPLATES, ...BASE_TEMPLATES].map((t) =>
+  t.sidebarSections && !t.sidebarSections.includes('personal')
+    ? { ...t, sidebarSections: [...t.sidebarSections, 'personal'] }
+    : t,
+);
+
 export const DEFAULT_TEMPLATE_ID = 'ats-classic';
 
 export function getTemplate(id: string): TemplateDefinition {
@@ -884,6 +1101,7 @@ export function getTemplate(id: string): TemplateDefinition {
 }
 
 export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
+  'UAE & Gulf',
   'ATS & classic',
   'Modern professional',
   'Two-column',
@@ -900,11 +1118,19 @@ export const FONT_STACKS: Record<string, string> = {
   Garamond: "Garamond, 'EB Garamond', Georgia, serif",
   'Source Sans': "'Source Sans 3', 'Source Sans Pro', Inter, Arial, sans-serif",
   Lato: "'Lato', 'Segoe UI', Arial, sans-serif",
+  Montserrat: "'Montserrat', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+  Playfair: "'Playfair Display', Georgia, 'Times New Roman', serif",
 };
 
 export const FONT_OPTIONS = Object.keys(FONT_STACKS);
 
 export const ACCENT_PRESETS = [
+  '#0b2545',
+  '#14532d',
+  '#0f4c5c',
+  '#7f1d1d',
+  '#9a4f24',
+  '#b08d57',
   '#000000',
   '#1f4e79',
   '#14303f',

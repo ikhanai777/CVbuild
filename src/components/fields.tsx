@@ -30,20 +30,40 @@ export function TextInput({
   onChange,
   placeholder,
   type = 'text',
+  suggestions,
+  dir,
+  lang,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   type?: string;
+  /** Offered as a native autocomplete list; free text is still accepted. */
+  suggestions?: string[];
+  dir?: 'ltr' | 'rtl';
+  lang?: string;
 }) {
+  const listId = useId();
   return (
-    <input
-      className="input"
-      type={type}
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-    />
+    <>
+      <input
+        className={`input${dir === 'rtl' ? ' input--rtl' : ''}`}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        dir={dir}
+        lang={lang}
+        list={suggestions?.length ? listId : undefined}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {suggestions?.length ? (
+        <datalist id={listId}>
+          {suggestions.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
+      ) : null}
+    </>
   );
 }
 

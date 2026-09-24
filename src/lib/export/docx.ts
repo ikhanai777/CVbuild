@@ -29,7 +29,13 @@ import {
 } from 'docx';
 import type { Resume, SectionId, SectionKey } from '../../types/resume';
 import { getTemplate } from '../../templates/registry';
-import { orderedSectionIds, sectionTitle } from '../../templates/Sections';
+import {
+  arabicSectionTitle,
+  orderedSectionIds,
+  personalRows,
+  sectionTitle,
+} from '../../templates/Sections';
+import { keyFacts } from '../uae';
 import { dateRange, joinNonEmpty, prettyUrl } from '../format';
 
 const PAGE_TWIPS = {
@@ -46,6 +52,8 @@ const DOCX_FONTS: Record<string, string> = {
   Garamond: 'Garamond',
   'Source Sans': 'Calibri',
   Lato: 'Calibri',
+  Montserrat: 'Calibri',
+  Playfair: 'Georgia',
 };
 
 /** docx wants bare hex; the app stores CSS hex. */
@@ -74,7 +82,23 @@ function body(ctx: Ctx, text: string, opts: { italics?: boolean; color?: string 
   });
 }
 
-function heading(ctx: Ctx, text: string): Paragraph {
+/** Word has no Tajawal; Arial carries full Arabic shaping on every install. */
+const ARABIC_FONT = 'Arial';
+
+function arabicRun(text: string, size: number, color: string, bold = false): TextRun {
+  return new TextRun({
+    text,
+    font: { ascii: ARABIC_FONT, hAnsi: ARABIC_FONT, cs: ARABIC_FONT },
+    size,
+    sizeComplexScript: size,
+    color,
+    bold,
+    boldComplexScript: bold,
+    rightToLeft: true,
+  });
+}
+
+function heading(ctx: Ctx, text: string, arabic = ''): Paragraph {
   return new Paragraph({
     spacing: { before: 220, after: 90 },
     border: {
@@ -94,6 +118,12 @@ function heading(ctx: Ctx, text: string): Paragraph {
         size: ctx.size,
         characterSpacing: 20,
       }),
+      ...(arabic
+        ? [
+            new TextRun({ text: '  |  ', color: ctx.accent, font: ctx.font, size: ctx.size }),
+            arabicRun(arabic, ctx.size + 1, ctx.accent, true),
+          ]
+        : []),
     ],
     heading: HeadingLevel.HEADING_2,
   });
@@ -155,12 +185,13 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
   const r = ctx.resume;
   if (r.settings.hiddenSections.includes(id)) return [];
   const title = sectionTitle(r, id);
+  const titleAr = arabicSectionTitle(r, id);
 
   if (id.startsWith('custom:')) {
     const custom = r.customSections.find((c) => `custom:${c.id}` === id);
     if (!custom?.entries.length) return [];
     return [
-      heading(ctx, title),
+      heading(ctx, title, titleAr),
       ...custom.entries.flatMap((e) => [
         entryTitle(ctx, e.title, e.date),
         ...subtitle(ctx, e.subtitle),
@@ -173,12 +204,12 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
   switch (id as SectionKey) {
     case 'summary':
       if (!r.basics.summary.trim()) return [];
-      return [heading(ctx, title), ...paragraph(ctx, r.basics.summary)];
+      return [heading(ctx, title, titleAr), ...paragraph(ctx, r.basics.summary)];
 
     case 'experience':
       if (!r.experience.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.experience.flatMap((job) => [
           entryTitle(ctx, job.position, dateRange(job.startDate, job.endDate, job.current)),
           ...subtitle(ctx, joinNonEmpty([job.company, job.location], ' · ')),
@@ -190,7 +221,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'education':
       if (!r.education.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.education.flatMap((ed) => [
           entryTitle(ctx, joinNonEmpty([ed.degree, ed.field], ', '), dateRange(ed.startDate, ed.endDate)),
           ...subtitle(ctx, joinNonEmpty([ed.institution, ed.location], ' · ')),
@@ -203,7 +234,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
       const groups = r.skills.filter((g) => g.items.filter(Boolean).length);
       if (!groups.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...groups.map(
           (g) =>
             new Paragraph({
@@ -222,7 +253,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'projects':
       if (!r.projects.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.projects.flatMap((p) => [
           entryTitle(ctx, joinNonEmpty([p.name, p.role], ' — '), dateRange(p.startDate, p.endDate)),
           ...subtitle(ctx, p.link ? prettyUrl(p.link) : ''),
@@ -234,7 +265,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'certifications':
       if (!r.certifications.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.certifications.map(
           (c) =>
             new Paragraph({
@@ -250,7 +281,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'awards':
       if (!r.awards.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.awards.flatMap((a) => [
           entryTitle(ctx, a.title, a.date),
           ...subtitle(ctx, a.issuer),
@@ -261,7 +292,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'publications':
       if (!r.publications.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.publications.map(
           (p) =>
             new Paragraph({
@@ -280,7 +311,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'languages':
       if (!r.languages.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...paragraph(
           ctx,
           r.languages.map((l) => joinNonEmpty([l.name, l.level], ' — ')).join(' · '),
@@ -290,7 +321,7 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'volunteer':
       if (!r.volunteer.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.volunteer.flatMap((v) => [
           entryTitle(ctx, v.role, dateRange(v.startDate, v.endDate)),
           ...subtitle(ctx, v.organization),
@@ -302,19 +333,37 @@ function sectionParagraphs(ctx: Ctx, id: SectionId): Paragraph[] {
     case 'interests': {
       const items = r.interests.filter(Boolean);
       if (!items.length) return [];
-      return [heading(ctx, title), ...paragraph(ctx, items.join(' · '))];
+      return [heading(ctx, title, titleAr), ...paragraph(ctx, items.join(' · '))];
     }
 
     case 'references':
       if (!r.references.length) return [];
       return [
-        heading(ctx, title),
+        heading(ctx, title, titleAr),
         ...r.references.flatMap((ref) => [
           entryTitle(ctx, ref.name, ''),
           ...subtitle(ctx, joinNonEmpty([ref.title, ref.company], ', ')),
           ...paragraph(ctx, ref.contact),
         ]),
       ];
+
+    case 'personal': {
+      const rows = personalRows(r);
+      if (!rows.length) return [];
+      return [
+        heading(ctx, title, titleAr),
+        ...rows.map(
+          (row) =>
+            new Paragraph({
+              spacing: { after: 30 },
+              children: [
+                new TextRun({ text: `${row.label}: `, bold: true, font: ctx.font, size: ctx.size }),
+                body(ctx, row.value),
+              ],
+            }),
+        ),
+      ];
+    }
 
     default:
       return [];
@@ -354,6 +403,17 @@ function headerParagraphs(ctx: Ctx): Paragraph[] {
     }),
   ];
 
+  const arabicName = r.personal.nameArabic.trim();
+  if (arabicName) {
+    out.push(
+      new Paragraph({
+        alignment,
+        spacing: { after: 40 },
+        children: [arabicRun(arabicName, Math.round(ctx.size * 1.3), '4B5563')],
+      }),
+    );
+  }
+
   if (r.basics.headline) {
     out.push(
       new Paragraph({
@@ -371,7 +431,28 @@ function headerParagraphs(ctx: Ctx): Paragraph[] {
     );
   }
 
+  // Nationality, visa, notice and licence get their own line so they stay
+  // readable as a group rather than trailing off the end of the contacts.
+  const factLine = keyFacts(r)
+    .map((f) => f.text)
+    .join('  |  ');
+
   if (contactLine) {
+    out.push(
+      new Paragraph({
+        alignment,
+        spacing: { after: factLine ? 30 : 120 },
+        border: factLine
+          ? undefined
+          : { bottom: { color: ctx.accent, style: BorderStyle.SINGLE, size: 8, space: 6 } },
+        children: [
+          new TextRun({ text: contactLine, size: ctx.size - 2, color: '4B5563', font: ctx.font }),
+        ],
+      }),
+    );
+  }
+
+  if (factLine) {
     out.push(
       new Paragraph({
         alignment,
@@ -380,7 +461,7 @@ function headerParagraphs(ctx: Ctx): Paragraph[] {
           bottom: { color: ctx.accent, style: BorderStyle.SINGLE, size: 8, space: 6 },
         },
         children: [
-          new TextRun({ text: contactLine, size: ctx.size - 2, color: '4B5563', font: ctx.font }),
+          new TextRun({ text: factLine, size: ctx.size - 2, color: ctx.accent, bold: true, font: ctx.font }),
         ],
       }),
     );

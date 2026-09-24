@@ -4,6 +4,7 @@ import { FONT_STACKS, getTemplate, type TemplateDefinition } from './registry';
 import { orderedSectionIds, renderSection } from './Sections';
 import { Icon } from './icons';
 import { initials, prettyUrl, readableOn, withAlpha } from '../lib/format';
+import { keyFacts } from '../lib/uae';
 
 /** Physical page geometry, in mm. */
 const PAGE_SIZES = {
@@ -26,6 +27,11 @@ function contactEntries(resume: Resume): ContactEntry[] {
   if (b.website) out.push({ key: 'website', icon: 'link', text: prettyUrl(b.website) });
   if (b.linkedin) out.push({ key: 'linkedin', icon: 'linkedin', text: prettyUrl(b.linkedin) });
   if (b.github) out.push({ key: 'github', icon: 'github', text: prettyUrl(b.github) });
+  // Nationality, visa, notice period and licence: what a UAE recruiter screens
+  // on before reading anything else, so they sit with the contact details.
+  for (const fact of keyFacts(resume)) {
+    out.push({ key: `fact-${fact.key}`, icon: fact.icon, text: fact.text });
+  }
   return out;
 }
 
@@ -35,7 +41,10 @@ function ContactList({ resume }: { resume: Resume }) {
   return (
     <ul className="cv-contact">
       {entries.map((e) => (
-        <li className="cv-contact__item" key={e.key}>
+        <li
+          className={`cv-contact__item${e.key.startsWith('fact-') ? ' cv-contact__item--fact' : ''}`}
+          key={e.key}
+        >
           {resume.settings.showIcons ? <Icon name={e.icon} /> : null}
           <span>{e.text}</span>
         </li>
@@ -57,7 +66,17 @@ function Header({ resume, template }: { resume: Resume; template: TemplateDefini
   const { fullName, headline } = resume.basics;
   const variant = template.header;
 
-  const name = <h1 className="cv-name">{fullName || 'Your Name'}</h1>;
+  const arabic = resume.personal.nameArabic.trim();
+  const name = (
+    <>
+      <h1 className="cv-name">{fullName || 'Your Name'}</h1>
+      {arabic ? (
+        <div className="cv-name-ar" lang="ar" dir="rtl">
+          {arabic}
+        </div>
+      ) : null}
+    </>
+  );
   const role = headline ? <div className="cv-headline">{headline}</div> : null;
 
   if (variant === 'monogram') {
@@ -105,6 +124,7 @@ function Header({ resume, template }: { resume: Resume; template: TemplateDefini
   if (variant === 'centered') {
     return (
       <header className="cv-header cv-header--centered">
+        <Photo resume={resume} />
         {name}
         {role}
         <ContactList resume={resume} />
@@ -115,7 +135,7 @@ function Header({ resume, template }: { resume: Resume; template: TemplateDefini
   if (variant === 'bold-left') {
     return (
       <header className="cv-header cv-header--bold-left">
-        {name}
+        {arabic ? <div className="cv-name-block">{name}</div> : name}
         <div className="cv-header__right">
           {role}
           <ContactList resume={resume} />

@@ -8,6 +8,7 @@
  * user knows what to check rather than discovering it after they apply.
  */
 import type {
+  PersonalDetails,
   CertificationItem,
   EducationItem,
   ExperienceItem,
@@ -100,7 +101,50 @@ const SECTION_SYNONYMS: Array<{ key: SectionKey; patterns: RegExp }> = [
     patterns: /^(interests?|hobbies( (and|&) interests)?|personal\s+interests|activities)$/i,
   },
   { key: 'references', patterns: /^(references?|referees?)$/i },
+  {
+    key: 'personal',
+    patterns:
+      /^(personal\s+(details|information|info|data|profile|particulars)|visa\s+(details|status)|other\s+details|additional\s+(details|information))$/i,
+  },
 ];
+
+/* ------------------------------------------------------------------ */
+/* Gulf personal details                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * "Label: value" lines as Gulf CVs write them. Matched anywhere in the
+ * document, not only under a Personal Details heading, because many CVs put
+ * nationality and visa status in the header beside the phone number.
+ */
+const PERSONAL_LINE_RULES: Array<{ key: keyof PersonalDetails; label: RegExp }> = [
+  { key: 'nationality', label: /nationality|citizenship/i },
+  { key: 'visaStatus', label: /visa(\s+status|\s+type)?|residence\s+status|work\s+permit/i },
+  { key: 'availability', label: /notice(\s+period)?|availability|available\s+(from|to\s+join)|joining/i },
+  { key: 'drivingLicence', label: /driving\s+licen[cs]e|driver'?s?\s+licen[cs]e|licen[cs]e/i },
+  { key: 'dateOfBirth', label: /date\s+of\s+birth|d\.?o\.?b\.?|birth\s*date/i },
+  { key: 'gender', label: /gender|sex/i },
+  { key: 'maritalStatus', label: /marital\s+status|civil\s+status/i },
+];
+
+const ARABIC_RE = /[\u0600-\u06FF]/;
+
+/** Pulls every "Nationality: Indian"-style pair out of the given lines. */
+export function extractPersonalDetails(lines: string[]): Partial<PersonalDetails> {
+  const out: Partial<PersonalDetails> = {};
+  for (const raw of lines) {
+    // One line may carry several pairs: "Nationality: Indian | Visa: Employment".
+    for (const chunk of stripBullet(raw).split(/\s+[|·•]\s+|\s{3,}/)) {
+      const m = /^\s*([A-Za-z.' ]{2,28}?)\s*[:：–-]\s*(.{1,80})$/.exec(chunk);
+      if (!m) continue;
+      const label = m[1].trim();
+      const value = m[2].trim().replace(/[.;,]+$/, '');
+      const rule = PERSONAL_LINE_RULES.find((r) => new RegExp(`^(${r.label.source})$`, 'i').test(label));
+      if (rule && value && !out[rule.key]) out[rule.key] = value;
+    }
+  }
+  return out;
+}
 
 function cleanHeading(line: string): string {
   return line
@@ -459,6 +503,12 @@ export function parseResumeText(text: string, name = 'Imported CV'): ParseResult
   resume.basics.github = contacts.github;
   resume.basics.fullName = extractName(lines);
 
+  // Gulf CVs state nationality, visa and notice period as labelled pairs, often
+  // in the header, so scan the whole document for them.
+  Object.assign(resume.personal, extractPersonalDetails(lines));
+  const arabicLine = lines.slice(0, 8).find((l) => ARABIC_RE.test(l) && l.trim().length <= 48);
+  if (arabicLine) resume.personal.nameArabic = arabicLine.replace(/[^\u0600-\u06FF\s]/g, '').trim();
+
   if (!resume.basics.fullName) notes.push('Could not identify a name — add it in the Details tab.');
   if (!contacts.email) notes.push('No email address found in the document.');
 
@@ -497,6 +547,7 @@ export function parseResumeText(text: string, name = 'Imported CV'): ParseResult
     if (EMAIL_RE.test(t) || /https?:|www\.|@/.test(t)) continue;
     if (PHONE_RE.test(t) && t.replace(/\D/g, '').length >= 7) continue;
     if (t === contacts.location) continue;
+    if (ARABIC_RE.test(t) || Object.keys(extractPersonalDetails([t])).length) continue;
     resume.basics.headline = t.replace(/^[|·•\-–—\s]+/, '').trim();
     break;
   }
@@ -739,6 +790,16 @@ export function parseResumeText(text: string, name = 'Imported CV'): ParseResult
             company: '',
             contact: entry.bullets.join(' '),
           });
+        }
+        break;
+      }
+
+      case 'personal': {
+        // Already read by the document-wide scan; anything unlabelled here
+        // (hobbies, a stray line) is left out rather than guessed at.
+        const found = extractPersonalDetails(body);
+        for (const [k, v] of Object.entries(found) as Array<[keyof PersonalDetails, string]>) {
+          if (!resume.personal[k]) resume.personal[k] = v;
         }
         break;
       }

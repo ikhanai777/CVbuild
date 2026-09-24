@@ -5,6 +5,7 @@ import { TemplateGallery } from './components/TemplateGallery';
 import { DesignPanel } from './components/DesignPanel';
 import { ReviewPanel } from './components/ReviewPanel';
 import { PlaybookPanel } from './components/PlaybookPanel';
+import { UaePanel } from './components/UaePanel';
 import { ImportDialog } from './components/ImportDialog';
 import { DialogHost } from './components/dialogs';
 import { Preview } from './components/Preview';
@@ -13,10 +14,11 @@ import { useResume, useStore } from './state/store';
 import { applyPageRule } from './lib/export/print';
 import { scoreResume } from './lib/analysis/score';
 
-type Tab = 'content' | 'templates' | 'design' | 'review' | 'guide';
+type Tab = 'content' | 'uae' | 'templates' | 'design' | 'review' | 'guide';
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'content', label: 'Content' },
+  { id: 'uae', label: 'UAE Toolkit' },
   { id: 'templates', label: 'Templates' },
   { id: 'design', label: 'Design' },
   { id: 'review', label: 'Review' },
@@ -95,6 +97,7 @@ export function App() {
 
           <div className="panel__scroll">
             {tab === 'content' ? <ContentEditor /> : null}
+            {tab === 'uae' ? <UaePanel /> : null}
             {tab === 'templates' ? <TemplateGallery /> : null}
             {tab === 'design' ? <DesignPanel /> : null}
             {tab === 'review' ? <ReviewPanel /> : null}

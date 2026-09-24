@@ -3,6 +3,10 @@
  * and never depend on a webfont that a print driver might not load.
  */
 const paths: Record<string, string> = {
+  flag: 'M3.5 14V2.5 M3.5 2.5h8l-1.6 3 1.6 3h-8',
+  visa: 'M2 3.5h12v9H2z M4.5 7.5a1.3 1.3 0 1 0 2.6 0 1.3 1.3 0 1 0-2.6 0 M9 6.5h3 M9 9h3 M4 10.5h4',
+  clock: 'M2 8a6 6 0 1 0 12 0A6 6 0 1 0 2 8 M8 4.5V8l2.3 1.6',
+  car: 'M2.5 11V8.2l1.4-3.4h8.2l1.4 3.4V11z M2.5 11v1.5 M13.5 11v1.5 M4.8 9.2h.01 M11.2 9.2h.01',
   email: 'M2 4h12v8H2z M2 4l6 4 6-4',
   phone:
     'M3 2.5h2.2l1 2.4-1.4 1a8 8 0 0 0 3.3 3.3l1-1.4 2.4 1V11a1.5 1.5 0 0 1-1.6 1.5A10.5 10.5 0 0 1 2.5 4.1 1.5 1.5 0 0 1 3 2.5z',
