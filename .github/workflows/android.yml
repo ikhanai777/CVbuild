@@ -15,6 +15,9 @@ concurrency:
   group: android-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,9 +26,9 @@ jobs:
       run:
         working-directory: android
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -34,6 +37,23 @@ jobs:
 
       - name: Unit tests
         run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: Publish template previews
+        if: github.event_name == 'push'
+        working-directory: .
+        run: |
+          set -e
+          mkdir -p /tmp/previews
+          cp android/app/build/previews/*.png /tmp/previews/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan folio-previews-tmp
+          git rm -rf --quiet .
+          cp /tmp/previews/*.png .
+          git add ./*.png
+          git commit -q -m "Template previews for ${GITHUB_SHA::7}"
+          git push -f origin HEAD:refs/heads/folio-previews
+          git checkout -f "$GITHUB_SHA"
 
       - name: Build debug and release APKs
         run: ./gradlew --no-daemon assembleDebug assembleRelease
