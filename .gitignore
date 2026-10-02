@@ -7,3 +7,8 @@ dist-ssr/
 coverage/
 *.log
 tsconfig.tsbuildinfo
+
+# Play upload key and its passwords: never commit
+keystore.properties
+*.jks
+*.keystore

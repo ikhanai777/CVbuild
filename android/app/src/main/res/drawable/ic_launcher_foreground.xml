@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A single sheet of paper with one accent rule: the whole product in one mark. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#1D1D1F"
+        android:pathData="M38,30h32a4,4 0,0 1,4 4v40a4,4 0,0 1,-4 4h-32a4,4 0,0 1,-4 -4v-40a4,4 0,0 1,4 -4z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,38h18v4h-18z" />
+    <path
+        android:fillColor="#0071E3"
+        android:pathData="M42,47h24v2.5h-24z" />
+    <path
+        android:fillColor="#8E8E93"
+        android:pathData="M42,54h24v1.5h-24zM42,59h20v1.5h-20zM42,64h22v1.5h-22z" />
+</vector>
