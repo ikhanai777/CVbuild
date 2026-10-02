@@ -124,7 +124,8 @@ def welcome():
 
 def new_sheet():
     tap("Create your CV")
-    time.sleep(2.5)
+    find("Mechanical engineer")
+    time.sleep(2)
     shot("02_new_sheet")
 
 
@@ -144,14 +145,10 @@ def editor():
 
 
 def entry():
-    root = dump()
-    # Open the first experience entry: the first clickable card under the top bar.
-    texts = [n for n in root.iter("node") if n.get("text")]
-    print("experience texts", [t.get("text") for t in texts][:20], flush=True)
-    target = texts[1] if len(texts) > 1 else texts[0]
-    x1, y1, x2, y2 = map(int, re.findall(r"\d+", target.get("bounds")))
-    sh(f"input tap {(x1 + x2) // 2} {(y1 + y2) // 2}")
+    tap("Senior Mechanical Design Engineer")
     time.sleep(2.5)
+    sh("input keyevent KEYCODE_ESCAPE")
+    time.sleep(1)
     shot("06_entry")
     swipe(W // 2, H * 3 // 4, W // 2, H // 3, 600)
     time.sleep(1.5)
@@ -163,7 +160,7 @@ def entry():
 
 
 def personal():
-    tap("Personal details", exact=False)
+    tap("Daniel Okafor", exact=False)
     time.sleep(2.5)
     shot("08_personal")
     back()
@@ -190,9 +187,12 @@ def templates():
 
 
 def template_categories():
-    for label in ["Engineering", "Creative", "Executive", "Modern", "Classic", "Minimal"]:
+    x, y = find("Minimal")
+    swipe(W * 4 // 5, y, W // 5, y, 400)
+    time.sleep(1.5)
+    for label in ["Engineering", "Creative", "Modern", "Classic"]:
         try:
-            x, y = find(label, timeout=3)
+            x, y = find(label, timeout=4)
         except Exception:
             continue
         sh(f"input tap {x} {y}")
@@ -273,6 +273,12 @@ def home():
     time.sleep(2)
     back()
     time.sleep(3)
+    try:
+        find("Mechanical engineer", timeout=3)
+        back()  # the new-CV sheet reopens on the first home visit
+        time.sleep(2)
+    except Exception:
+        pass
     shot("30_home")
 
 
@@ -281,7 +287,7 @@ def dark():
     time.sleep(3)
     shot("31_home_dark")
     try:
-        tap("Mechanical Engineer CV", exact=False)
+        tap("Mechanical Engineer CV")
         time.sleep(3)
         shot("32_editor_dark")
         tap("Preview & export")
