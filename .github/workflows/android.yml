@@ -22,6 +22,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # The Play upload key comes from repository secrets; without them the release build
+      # falls back to the debug key and no .aab is produced.
+      HAS_UPLOAD_KEY: ${{ secrets.UPLOAD_KEYSTORE_BASE64 != '' }}
     defaults:
       run:
         working-directory: android
@@ -55,8 +59,41 @@ jobs:
           git push -f origin HEAD:refs/heads/folio-previews
           git checkout -f "$GITHUB_SHA"
 
+      - name: Install the upload key
+        if: github.event_name == 'push' && env.HAS_UPLOAD_KEY == 'true'
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: |
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 --decode > upload-keystore.jks
+          {
+            echo "storeFile=upload-keystore.jks"
+            echo "storePassword=$UPLOAD_KEYSTORE_PASSWORD"
+            echo "keyAlias=$UPLOAD_KEY_ALIAS"
+            echo "keyPassword=$UPLOAD_KEY_PASSWORD"
+          } > keystore.properties
+
       - name: Build debug and release APKs
         run: ./gradlew --no-daemon assembleDebug assembleRelease
+
+      - name: Check 16 KB page size support
+        run: scripts/check-16kb.sh app/build/outputs/apk/release/app-release.apk
+
+      - name: Build the signed Play bundle
+        if: github.event_name == 'push' && env.HAS_UPLOAD_KEY == 'true'
+        run: |
+          ./gradlew --no-daemon bundleRelease
+          scripts/check-16kb.sh app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload the Play bundle
+        if: github.event_name == 'push' && env.HAS_UPLOAD_KEY == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: folio-play-bundle
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
 
       - name: Lint
         run: ./gradlew --no-daemon lintDebug

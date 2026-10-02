@@ -64,3 +64,31 @@ see is exactly what you export.
 | Gauge | Engineering | Single column, icon contacts, optional headshot |
 
 Fonts are bundled under the SIL Open Font License 1.1.
+
+## Releasing to Google Play
+
+Package `com.folio.cv`, version 1 ("1.0"), target and compile SDK 36. Release builds are
+shrunk with R8, resource-shrunk and non-debuggable. The app ships no native libraries, and CI
+checks every build for 16 KB page-size support (`scripts/check-16kb.sh`).
+
+**Upload key.** Create it once, on your own machine, and keep it and its passwords safe
+(RSA 4096, valid for about 27 years):
+
+```bash
+keytool -genkeypair -v -keystore upload-keystore.jks -alias upload \
+  -keyalg RSA -keysize 4096 -validity 10000
+```
+
+**Signing locally.** Put `upload-keystore.jks` in `android/`, copy `keystore.properties.example`
+to `keystore.properties` and fill it in. Both files are git-ignored. Then run
+`./gradlew bundleRelease`; the bundle is `app/build/outputs/bundle/release/app-release.aab`.
+
+**Signing in CI.** Add four repository secrets and every push builds the signed bundle as the
+`folio-play-bundle` artifact:
+
+```bash
+base64 -w0 upload-keystore.jks | gh secret set UPLOAD_KEYSTORE_BASE64   # macOS: base64 -i upload-keystore.jks
+gh secret set UPLOAD_KEYSTORE_PASSWORD
+gh secret set UPLOAD_KEY_ALIAS        # upload
+gh secret set UPLOAD_KEY_PASSWORD
+```

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,27 +7,48 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+/**
+ * The Play upload key lives outside git: android/keystore.properties points at the keystore and
+ * holds its passwords. Without it, release builds fall back to the debug key so CI can still
+ * produce an installable APK, and bundleRelease refuses to run.
+ */
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val hasUploadKey = !keystoreProperties.isEmpty
+
 android {
     namespace = "com.folio.cv"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.folio.cv"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0"
         vectorDrawables { useSupportLibrary = true }
+    }
+
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Signed with the debug key so CI can produce an installable release build.
-            // Replace with a real upload key before publishing to Google Play.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (hasUploadKey) "upload" else "debug")
         }
     }
 
@@ -72,4 +95,13 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
+}
+
+// A Play bundle must never be signed with the debug key.
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    doFirst {
+        if (!hasUploadKey) {
+            throw GradleException("bundleRelease needs android/keystore.properties with the upload key; see android/README.md")
+        }
+    }
 }
