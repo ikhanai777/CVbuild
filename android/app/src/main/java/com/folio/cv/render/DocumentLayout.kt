@@ -242,6 +242,21 @@ class DocumentLayout(private val fonts: FontRegistry) {
         fun contactLine(separator: String): String =
             resume.header.contactItems().joinToString(separator) { it.value }
 
+        /** Contact items packed greedily into lines so a line only ever breaks between items. */
+        fun contactLines(separator: String, paint: TextPaint, width: Float): String {
+            val lines = mutableListOf<String>()
+            var line = ""
+            for (item in resume.header.contactItems().map { it.value }) {
+                val candidate = if (line.isEmpty()) item else line + separator + item
+                if (line.isNotEmpty() && paint.measureText(candidate) > width) {
+                    lines.add(line)
+                    line = item
+                } else line = candidate
+            }
+            if (line.isNotEmpty()) lines.add(line)
+            return lines.joinToString("\n")
+        }
+
         // ---------------------------------------------------------------- header
 
         fun header(): Float = when (t.header) {
@@ -273,10 +288,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 out.add(Placed(margin, y, TextOp(hl)))
                 y += hl.height
             }
-            val contacts = contactLine(if (centered) "   |   " else "   ·   ")
+            val metaPaint = paint(type.meta, secondary)
+            val contacts = contactLines(if (centered) "   |   " else "   ·   ", metaPaint, textW)
             if (contacts.isNotEmpty()) {
                 y += 7f * d
-                val cl = layout(contacts, paint(type.meta, secondary), textW, type.meta, align)
+                val cl = layout(contacts, metaPaint, textW, type.meta, align)
                 out.add(Placed(margin, y, TextOp(cl)))
                 y += cl.height
             }
@@ -339,10 +355,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 items.add(Placed(margin, y, TextOp(hl)))
                 y += hl.height
             }
-            val contacts = contactLine("   ·   ")
+            val bandMeta = paint(type.meta, onBandSoft)
+            val contacts = contactLines("   ·   ", bandMeta, textW)
             if (contacts.isNotEmpty()) {
                 y += 8f * d
-                val cl = layout(contacts, paint(type.meta, onBandSoft), textW, type.meta)
+                val cl = layout(contacts, bandMeta, textW, type.meta)
                 items.add(Placed(margin, y, TextOp(cl)))
                 y += cl.height
             }
@@ -387,7 +404,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
             val contacts = resume.header.contactItems().take(4)
             var row2 = 0f
             if (contacts.isNotEmpty()) {
-                val cw = contentW / contacts.size
+                val valuePaint = paint(type.meta, ink)
+                val natural = contacts.map { max(valuePaint.measureText(it.value), 48f) + 2 * pad }
+                val scale = contentW / natural.sum()
+                val widths = natural.map { it * scale }
+                val lefts = widths.runningFold(x0) { acc, cw -> acc + cw }
                 contacts.forEachIndexed { i, item ->
                     val label = when (item.kind) {
                         ContactKind.EMAIL -> "Email"
@@ -397,11 +418,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
                         ContactKind.LINKEDIN -> "LinkedIn"
                         ContactKind.GITHUB -> "GitHub"
                     }
-                    val vl = layout(item.value, paint(type.meta, ink), cw - 2 * pad, type.meta)
-                    row2 = max(row2, cell(label, x0 + i * cw, top + row1, cw, vl))
+                    val vl = layout(item.value, valuePaint, widths[i] - 2 * pad, type.meta)
+                    row2 = max(row2, cell(label, lefts[i], top + row1, widths[i], vl))
                 }
                 for (i in 1 until contacts.size) {
-                    val lx = x0 + i * (contentW / contacts.size)
+                    val lx = lefts[i]
                     out.add(Placed(0f, 0f, LineOp(lx, top + row1, lx, top + row1 + row2, rule, 0.5f)))
                 }
                 out.add(Placed(0f, 0f, LineOp(x0, top + row1, x0 + contentW, top + row1, rule, 0.5f)))
@@ -567,16 +588,22 @@ class DocumentLayout(private val fonts: FontRegistry) {
                     indent = min(86f, width * 0.2f)
                     val tl = layout(title, paint(titleRole, ink), width - indent, titleRole)
                     y += head.text(indent, 0f, tl)
+                    var dateBottom = 0f
                     if (date.isNotEmpty()) {
-                        val dl = layout(date, paint(type.meta, if (e.current) accent else secondary), indent - 10f, type.meta)
-                        val shift = tl.getLineBaseline(0) - dl.getLineBaseline(0)
-                        head.text(0f, shift.toFloat(), dl)
-                        y = max(y, shift + dl.height.toFloat())
+                        val dp = paint(type.meta, if (e.current) accent else secondary)
+                        val dateW = indent - 10f
+                        // A range that does not fit stacks at the dash rather than wherever the line runs out.
+                        val text = if (dp.measureText(date) > dateW) date.replace(" – ", " –\n") else date
+                        val dl = layout(text, dp, dateW, type.meta)
+                        val shift = (tl.getLineBaseline(0) - dl.getLineBaseline(0)).toFloat()
+                        head.text(0f, shift, dl)
+                        dateBottom = shift + dl.height
                     }
                     if (org.isNotEmpty()) {
                         y += 1.5f * d
                         y += head.text(indent, y, layout(org, paint(bodyRole, secondary), width - indent, bodyRole))
                     }
+                    y = max(y, dateBottom)
                 }
             }
             head.height = y
