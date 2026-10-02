@@ -443,7 +443,14 @@ class DocumentLayout(private val fonts: FontRegistry) {
             val textTop = top + (blockH - textH) / 2
             if (photo != null) {
                 val photoTop = top + (blockH - size) / 2
-                out.add(Placed(0f, 0f, CircleOp(margin + ring + size / 2, photoTop + size / 2, size / 2 + ring, withAlpha(rule, 150))))
+                val ringColor = withAlpha(rule, 150)
+                out.add(
+                    Placed(
+                        0f, 0f,
+                        if (t.photo == PhotoShape.CIRCLE) CircleOp(margin + ring + size / 2, photoTop + size / 2, size / 2 + ring, ringColor)
+                        else RectOp(margin, photoTop - ring, margin + size + 2 * ring, photoTop + size + ring, ringColor, radius = size * 0.12f + ring),
+                    ),
+                )
                 out.add(Placed(0f, 0f, PhotoOp(photo, margin + ring, photoTop, size, t.photo)))
             }
             items.forEach { out.add(Placed(textX + it.x, textTop + it.y, it.op)) }

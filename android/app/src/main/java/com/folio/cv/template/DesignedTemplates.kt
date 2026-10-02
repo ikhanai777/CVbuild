@@ -413,7 +413,6 @@ internal object DesignedTemplates {
             accentOptions = modernAccents,
             marginPt = 50f,
             contactStyle = ContactStyle.ICONS,
-            headerRule = HeaderRule.HAIRLINE,
         ),
     )
 }
