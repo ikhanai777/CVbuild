@@ -1,0 +1,186 @@
+[
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_sans_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_sans_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_manrope_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/manrope_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_jetbrains_mono_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/jetbrains_mono_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_space_grotesk_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/space_grotesk_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_manrope_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/manrope_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_source_serif_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/source_serif_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_mono_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_mono_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_inter_bold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/inter_bold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_fraunces_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/fraunces_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_inter_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/inter_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/xml_backup_rules.xml.flat",
+        "source": "com.folio.cv.app-main-55:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_lato_bold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/lato_bold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_garamond_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/garamond_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_inter_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/inter_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_inter_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/inter_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_inter_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/inter_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/xml_file_paths.xml.flat",
+        "source": "com.folio.cv.app-main-55:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_poppins_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/poppins_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.folio.cv.app-main-55:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_garamond_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/garamond_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_source_serif_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/source_serif_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_sans_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_sans_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_sans_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_sans_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_manrope_bold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/manrope_bold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_fraunces_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/fraunces_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.folio.cv.app-main-55:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_mono_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_mono_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_jetbrains_mono_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/jetbrains_mono_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_lato_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/lato_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_poppins_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/poppins_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_dm_sans_bold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/dm_sans_bold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/xml_data_extraction_rules.xml.flat",
+        "source": "com.folio.cv.app-main-55:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_lato_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/lato_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_lato_light.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/lato_light.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_space_grotesk_bold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/space_grotesk_bold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_garamond_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/garamond_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_mono_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_mono_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_poppins_light.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/poppins_light.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_dm_sans_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/dm_sans_medium.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_garamond_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/garamond_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_dm_sans_italic.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/dm_sans_italic.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_dm_sans_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/dm_sans_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_poppins_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/poppins_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_source_serif_semibold.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/source_serif_semibold.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_space_grotesk_regular.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/space_grotesk_regular.ttf"
+    },
+    {
+        "merged": "com.folio.cv.app-debug-53:/font_plex_sans_medium.ttf.flat",
+        "source": "com.folio.cv.app-main-55:/font/plex_sans_medium.ttf"
+    }
+]
