@@ -70,6 +70,20 @@ jobs:
             android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
+      - name: Publish APK as a pre-release
+        if: github.event_name == 'push'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          cp android/app/build/outputs/apk/release/app-release.apk Folio.apk
+          gh release delete folio-latest --yes --cleanup-tag || true
+          gh release create folio-latest Folio.apk \
+            --prerelease --target "$GITHUB_SHA" \
+            --title "Folio (latest build)" \
+            --notes "Built from ${GITHUB_SHA::7}. On your phone, open Folio.apk and allow installs from your browser when asked."
+
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
