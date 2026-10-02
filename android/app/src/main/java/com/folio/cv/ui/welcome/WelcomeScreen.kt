@@ -55,7 +55,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Write once. Choose from twelve designer templates, including four made for engineers. " +
+                    "Write once. Choose from 27 designer templates, including six made for engineers. " +
                         "Export a PDF recruiters and their software can read.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Folio.colors.secondary,
