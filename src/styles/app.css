@@ -1633,12 +1633,27 @@ select.input {
     margin-right: 0;
   }
 
-  /* Menus must never be wider than the screen they drop onto. */
+  /* On a phone the toolbar wraps, so a button can land anywhere on its row
+     and a menu anchored to the button's edge runs off the screen. Anchor the
+     menus to the toolbar instead: they drop below it at full width, whichever
+     button opened them. */
+  .toolbar {
+    position: relative;
+    z-index: 30;
+  }
+  .toolbar__docs,
+  .toolbar__export {
+    position: static;
+  }
   .menu,
   .menu--right {
+    top: calc(100% + 4px);
+    left: 10px;
+    right: 10px;
+    width: auto;
     min-width: 0;
-    width: min(340px, calc(100vw - 20px));
-    max-width: calc(100vw - 20px);
+    max-width: none;
+    max-height: calc(100vh - 140px);
   }
 
   /* Five tabs do not fit; let them scroll rather than wrap into two rows. */

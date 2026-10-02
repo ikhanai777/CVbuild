@@ -27,8 +27,10 @@
     padding: 0;
   }
 
-  .app > .toolbar,
-  .app__body,
+  /* Everything in the app except the CV itself. Hiding by exclusion rather
+     than by listing the chrome means a control added later (as the mobile
+     Edit/Preview switch was) can never leak into the PDF. */
+  .app > :not(.print-root),
   .modal-backdrop {
     display: none !important;
   }
