@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="file" path="resumes/" />
+    <include domain="file" path="photos/" />
+    <include domain="sharedpref" path="folio_settings.xml" />
+</full-backup-content>
