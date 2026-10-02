@@ -12,6 +12,7 @@
  * such restriction, and printed from there.
  */
 import type { Resume } from '../../types/resume';
+import { androidBridge } from '../native';
 
 const PAGE_STYLE_ID = 'cvbuild-page-rule';
 
@@ -63,11 +64,20 @@ function isEmbedded(): boolean {
   }
 }
 
-/** Same-origin stylesheet rules, inlined so the new window needs no network. */
+/**
+ * Stylesheets for the new window. Linked sheets are re-linked by absolute URL
+ * rather than inlined: their font and image URLs are relative to the sheet's
+ * own location, and would break once copied into an about:blank document.
+ * Inline <style> blocks (the page rule, dev-mode styles) are copied as text.
+ */
 function collectStyles(): { css: string; externalHrefs: string[] } {
   let css = '';
   const externalHrefs: string[] = [];
   for (const sheet of Array.from(document.styleSheets)) {
+    if (sheet.href) {
+      externalHrefs.push(sheet.href);
+      continue;
+    }
     try {
       for (const rule of Array.from(sheet.cssRules)) css += `${rule.cssText}\n`;
     } catch {
@@ -138,6 +148,14 @@ export function printResume(resume: Resume, options: PrintOptions = {}): void {
   applyPageRule(resume);
   document.title = fileTitle(resume);
   options.onBeforePrint?.();
+
+  // In the Android app, print through Android's print framework; its
+  // "Save as PDF" printer produces the same selectable-text PDF.
+  const bridge = androidBridge();
+  if (bridge) {
+    window.setTimeout(() => bridge.print(fileTitle(resume), resume.settings.paperSize), 60);
+    return;
+  }
 
   if (isEmbedded() && printInNewWindow(resume)) return;
 

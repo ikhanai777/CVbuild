@@ -4,6 +4,7 @@ import { downloadDocx } from '../lib/export/docx';
 import { downloadJson } from '../lib/export/json';
 import { printResume } from '../lib/export/print';
 import { scoreResume } from '../lib/analysis/score';
+import { isAndroidApp } from '../lib/native';
 import { askConfirm, askNotice, askText } from './dialogs';
 
 function useOutsideClose(onClose: () => void) {
@@ -180,8 +181,9 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
               <span>
                 <strong>PDF</strong>
                 <span className="muted small">
-                  Opens your print dialog — choose “Save as PDF”. Text stays selectable, which ATS
-                  systems require.
+                  {isAndroidApp()
+                    ? 'Opens Android printing — pick “Save as PDF” as the printer. Text stays selectable, which ATS systems require.'
+                    : 'Opens your print dialog — choose “Save as PDF”. Text stays selectable, which ATS systems require.'}
                 </span>
               </span>
             </button>
@@ -197,7 +199,7 @@ export function Toolbar({ onImport }: { onImport: () => void }) {
               type="button"
               className="menu__item"
               onClick={() => {
-                downloadJson(resume);
+                void downloadJson(resume);
                 setExportOpen(false);
               }}
             >

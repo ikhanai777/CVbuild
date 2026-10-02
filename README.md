@@ -288,6 +288,40 @@ Keep one master CV and a tailored copy per application — duplicate, rename and
 switch from the toolbar. Everything autosaves to `localStorage`, with
 undo/redo (Ctrl+Z / Ctrl+Shift+Z) over the last 60 changes.
 
+### Android app
+
+`android/` packages the same build as a native Android app: a signed APK
+that works offline, with no internet permission, on Android 7.0 and later.
+
+```bash
+ANDROID_JAR=/path/to/android-34/android.jar ./android/build.sh
+# → android/dist/CVBuild-UAE-1.0.0.apk
+```
+
+The app is a single Activity around a WebView, so the build needs no Gradle
+and no full Android SDK. It uses only `aapt`, `dx`, `zipalign` and `apksigner`
+(on Ubuntu/Debian: `apt install aapt dalvik-exchange zipalign apksigner`) plus
+an API 34 `android.jar`. The native side does what a WebView can't do on its
+own:
+
+- **Serves the app from the APK** under a fixed https origin, so ES modules,
+  the pdf.js worker and `localStorage` behave as they do in a browser. Fonts
+  are bundled, so nothing is fetched from the network.
+- **PDF** goes through Android printing. Choosing "Save as PDF" keeps the text
+  selectable, as the browser path does.
+- **Word and JSON** save to `Downloads/CVBuild`, followed by an Open / Share
+  dialog. On Android 10+ this goes through MediaStore and needs no permission.
+- **Import and photo upload** use the system file picker.
+
+The web code talks to the shell through `window.AndroidBridge`
+(`src/lib/native.ts`). In a browser the bridge is absent and the normal
+download and print paths are used, so one build serves both.
+
+The first build creates a signing key in `android/.signing/`, which is
+gitignored. Keep it: Android only installs an update over an existing app when
+both are signed with the same key. Set `KEYSTORE`, `KEYSTORE_PASS` and
+`KEY_ALIAS` to sign with your own key instead.
+
 ---
 
 ## How it fits together

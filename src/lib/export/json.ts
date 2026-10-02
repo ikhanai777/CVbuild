@@ -10,21 +10,15 @@ import {
 } from '../../types/resume';
 import { emptyResume, DEFAULT_SETTINGS } from '../../data/defaults';
 import { suggestedFileName } from './docx';
+import { saveBlob } from '../native';
 
 export function exportJson(resume: Resume): string {
   return JSON.stringify(resume, null, 2);
 }
 
-export function downloadJson(resume: Resume): void {
+export async function downloadJson(resume: Resume): Promise<void> {
   const blob = new Blob([exportJson(resume)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = suggestedFileName(resume, 'json');
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  await saveBlob(blob, suggestedFileName(resume, 'json'));
 }
 
 /**
