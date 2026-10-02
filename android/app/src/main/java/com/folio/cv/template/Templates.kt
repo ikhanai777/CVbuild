@@ -14,7 +14,7 @@ import com.folio.cv.template.Weight.BOLD
 import com.folio.cv.template.Weight.MEDIUM
 import com.folio.cv.template.Weight.REGULAR
 
-/** The curated set. Twelve templates, each a complete system; four are built for mechanical engineers. */
+/** The curated set: 27 templates, each a complete system; six are built for mechanical engineers. */
 object Templates {
 
     /** Accent choices shared by most templates: restrained, print-safe, all at least 4.5:1 on white. */
@@ -298,7 +298,7 @@ object Templates {
             accentOptions = engineeringAccents,
             marginPt = 46f,
         ),
-    )
+    ) + DesignedTemplates.all
 
     private val byId = all.associateBy { it.id }
 

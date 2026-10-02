@@ -1,7 +1,7 @@
 # Folio for Android
 
 A native CV builder: Kotlin, Jetpack Compose and Material 3, offline-first, no account.
-Write once, pick from twelve templates (four built for mechanical engineers), and export a
+Write once, pick from 27 templates (six built for mechanical engineers), and export a
 vector PDF with real, selectable text.
 
 ## Build
@@ -21,7 +21,7 @@ push that touches `android/` and uploads them as the `folio-apks` artifact.
 | Area | Where |
 | --- | --- |
 | CV model, dates, edits, starter content | `model/` |
-| Template specs (12, data-driven) | `template/Templates.kt` |
+| Template specs (27, data-driven) | `template/Templates.kt`, `template/DesignedTemplates.kt` |
 | Layout engine: columns, headings, page breaks | `render/DocumentLayout.kt` |
 | PDF export and printing | `render/PdfExporter.kt` |
 | CV check (ATS and writing review) | `analysis/CvChecker.kt` |
@@ -47,5 +47,20 @@ see is exactly what you export.
 | Torque | Engineering | Technical toolkit sidebar (CAD, CAE, manufacturing) |
 | Chartered | Engineering | Serif, for PE / CEng credentials |
 | Datum | Engineering | Spec-sheet numbering, dates on a datum line |
+| Portrait | Modern | Ringed photo beside the name, ruled two columns, icon contacts |
+| Atrium | Modern | Full-height grey sidebar with photo, two-weight name |
+| Midnight | Modern | Navy sidebar with photo, connected timeline |
+| Sloane | Modern | Charcoal sidebar on the right |
+| Harbor | Modern | Teal header band with photo, timeline |
+| Sage | Modern | Pale green sidebar with photo |
+| Atlas | Modern | Rounded photo, ruled headings, margin dates |
+| Linea | Minimal | Thin wide-set capitals, full-width summary, timeline |
+| Clarity | Minimal | ATS-first single column with icon contacts |
+| Meridian | Classic | Centred, light capitals, optional portrait |
+| Linen | Classic | Garamond with a ruled side column |
+| Noir | Creative | Black header band, two-weight name |
+| Studio | Creative | Blush side panel, rounded portrait, timeline |
+| Kepler | Engineering | Steel sidebar for toolkit and credentials, timeline |
+| Gauge | Engineering | Single column, icon contacts, optional headshot |
 
 Fonts are bundled under the SIL Open Font License 1.1.

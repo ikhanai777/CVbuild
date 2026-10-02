@@ -1,5 +1,7 @@
 package com.folio.cv.template
 
+import com.folio.cv.model.SectionType
+
 /**
  * A template is a complete typographic system described as data. One layout engine interprets
  * every spec, so a new template is a new entry in [Templates], not new drawing code.
@@ -29,11 +31,27 @@ data class TemplateSpec(
     val photo: PhotoShape = PhotoShape.NONE,
     /** Show the per-entry tool tags ("SolidWorks · ANSYS") under each entry. */
     val showEntryTags: Boolean = true,
-)
+    val nameStyle: NameStyle = NameStyle.INLINE,
+    val contactStyle: ContactStyle = ContactStyle.LINE,
+    /** Which sections a two-column template places in the sidebar. */
+    val sidebarSections: Set<SectionType> = DEFAULT_SIDEBAR,
+    /** Tint the sidebar column. When false the columns are divided by [columnRule] or white space. */
+    val sidebarBackground: Boolean = true,
+    /** A hairline between the two columns. */
+    val columnRule: Boolean = false,
+    /** Lay the summary across the full width before the columns begin. */
+    val summaryFullWidth: Boolean = false,
+    val headerRule: HeaderRule = HeaderRule.NONE,
+) {
+    companion object {
+        val DEFAULT_SIDEBAR = setOf(SectionType.SKILLS, SectionType.LANGUAGES, SectionType.CERTIFICATIONS)
+    }
+}
 
 enum class TemplateCategory(val label: String) {
     MINIMAL("Minimal"),
     CLASSIC("Classic"),
+    MODERN("Modern"),
     CREATIVE("Creative"),
     ENGINEERING("Engineering"),
 }
@@ -53,7 +71,35 @@ enum class HeaderStyle {
     BAND,
     /** Engineering drawing title block: a ruled table of name, discipline and contacts. */
     TITLE_BLOCK,
+    /** A large photo on the left with the name, headline and contacts beside it. */
+    PHOTO_LEFT,
+    /**
+     * The sidebar runs the full page height and carries the photo at its top; the name and
+     * headline open the main column.
+     */
+    SIDEBAR,
 }
+
+/** How the name is set. */
+enum class NameStyle {
+    /** One run: "Maya Chen". */
+    INLINE,
+    /** First name above last name. */
+    STACKED,
+    /** First name above last name, the last name in a light weight. */
+    BOLD_LIGHT,
+}
+
+enum class ContactStyle {
+    /** One line joined with separators. */
+    LINE,
+    /** Small drawn icons beside each item, in up to two columns. */
+    ICONS,
+    /** A "Contact" list with icons at the top of the sidebar (two-column templates). */
+    SIDEBAR,
+}
+
+enum class HeaderRule { NONE, HAIRLINE, THICK }
 
 enum class HeadingStyle {
     /** Small, tracked capitals in the accent colour. */
@@ -68,6 +114,8 @@ enum class HeadingStyle {
     NUMBERED,
     /** Larger display-serif heading, no ornament. */
     DISPLAY,
+    /** Ink heading over a full-width rule. */
+    UNDERLINE,
 }
 
 enum class DateStyle {
@@ -77,6 +125,8 @@ enum class DateStyle {
     BELOW,
     /** Dates in a left gutter, timeline style. */
     GUTTER,
+    /** A vertical line with a marker per entry; the date sits above the title. */
+    TIMELINE,
 }
 
 enum class SkillStyle {
@@ -86,6 +136,8 @@ enum class SkillStyle {
     TAGS,
     /** Group label above a stacked list. */
     LIST,
+    /** One bulleted item per line, in two columns when there is room. */
+    BULLETS,
 }
 
 enum class PhotoShape { NONE, CIRCLE, ROUNDED }
@@ -101,9 +153,11 @@ enum class FontFamilyId(val label: String) {
     DM_SANS("DM Sans"),
     SPACE_GROTESK("Space Grotesk"),
     JETBRAINS_MONO("JetBrains Mono"),
+    POPPINS("Poppins"),
+    LATO("Lato"),
 }
 
-enum class Weight { REGULAR, MEDIUM, BOLD }
+enum class Weight { LIGHT, REGULAR, MEDIUM, BOLD }
 
 data class TypeRole(
     val family: FontFamilyId,
@@ -134,4 +188,6 @@ data class Palette(
     val sidebarFill: Long? = null,
     val bandFill: Long? = null,
     val onBand: Long = 0xFFFFFFFF,
+    /** Text colour on a dark sidebar. Null keeps the page colours. */
+    val onSidebar: Long? = null,
 )

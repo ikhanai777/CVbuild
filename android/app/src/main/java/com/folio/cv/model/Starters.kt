@@ -241,7 +241,8 @@ object Starters {
             Section(
                 Ids.new(), SectionType.SUMMARY,
                 text = "Product manager with 8 years shipping consumer mobile apps used by millions. " +
-                    "Known for crisp problem framing, fast iteration and teams that enjoy the work.",
+                    "Known for crisp problem framing, fast iteration and teams that enjoy the work. " +
+                    "Most at home where research, design and engineering meet.",
             ),
             Section(
                 Ids.new(), SectionType.EXPERIENCE,
@@ -251,6 +252,7 @@ object Starters {
                         bullets = listOf(
                             "Led the redesign of onboarding, lifting day-7 retention from 31% to 44%.",
                             "Shipped a subscription tier that reached \$12M ARR within 9 months.",
+                            "Grew the product team from 3 to 9 and set up quarterly planning with design and engineering.",
                         ),
                     ),
                     entry(
@@ -258,6 +260,12 @@ object Starters {
                         bullets = listOf(
                             "Launched offline sync for 2M users with a 99.98% conflict-free rate.",
                             "Built the experimentation practice from zero to 40 tests a quarter.",
+                        ),
+                    ),
+                    entry(
+                        "Associate Product Manager", "Lumen Labs", "San Jose, CA", "2015-07", "2017-05",
+                        bullets = listOf(
+                            "Ran 60+ customer interviews that reshaped the roadmap for the analytics product.",
                         ),
                     ),
                 ),
@@ -275,6 +283,13 @@ object Starters {
             Section(
                 Ids.new(), SectionType.LANGUAGES,
                 groups = listOf(group("", "English (native)", "Mandarin (fluent)")),
+            ),
+            Section(
+                Ids.new(), SectionType.REFERENCES,
+                entries = listOf(
+                    entry("Daniel Park", "Brightline / VP Product", description = "daniel.park@brightline.com\n+1 (415) 555-0110"),
+                    entry("Sofia Reyes", "Fieldnote / CEO", description = "sofia@fieldnote.app\n+1 (510) 555-0147"),
+                ),
             ),
         ),
     )

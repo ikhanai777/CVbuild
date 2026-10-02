@@ -44,7 +44,7 @@ class FontRegistry(private val context: Context) {
         FontFamilyId.PLEX_MONO -> when (weight) {
             Weight.BOLD -> R.font.plex_mono_semibold
             Weight.MEDIUM -> R.font.plex_mono_medium
-            Weight.REGULAR -> R.font.plex_mono_regular
+            Weight.REGULAR, Weight.LIGHT -> R.font.plex_mono_regular
         }
         FontFamilyId.GARAMOND -> when {
             italic -> R.font.garamond_italic
@@ -54,14 +54,15 @@ class FontRegistry(private val context: Context) {
         }
         FontFamilyId.SOURCE_SERIF -> when {
             italic -> R.font.source_serif_italic
-            weight == Weight.REGULAR -> R.font.source_serif_regular
+            weight == Weight.REGULAR || weight == Weight.LIGHT -> R.font.source_serif_regular
             else -> R.font.source_serif_semibold
         }
-        FontFamilyId.FRAUNCES -> if (weight == Weight.REGULAR) R.font.fraunces_regular else R.font.fraunces_semibold
+        FontFamilyId.FRAUNCES ->
+            if (weight == Weight.REGULAR || weight == Weight.LIGHT) R.font.fraunces_regular else R.font.fraunces_semibold
         FontFamilyId.MANROPE -> when (weight) {
             Weight.BOLD -> R.font.manrope_bold
             Weight.MEDIUM -> R.font.manrope_semibold
-            Weight.REGULAR -> R.font.manrope_regular
+            Weight.REGULAR, Weight.LIGHT -> R.font.manrope_regular
         }
         FontFamilyId.DM_SANS -> when {
             italic -> R.font.dm_sans_italic
@@ -72,8 +73,21 @@ class FontRegistry(private val context: Context) {
         FontFamilyId.SPACE_GROTESK -> when (weight) {
             Weight.BOLD -> R.font.space_grotesk_bold
             Weight.MEDIUM -> R.font.space_grotesk_medium
-            Weight.REGULAR -> R.font.space_grotesk_regular
+            Weight.REGULAR, Weight.LIGHT -> R.font.space_grotesk_regular
         }
-        FontFamilyId.JETBRAINS_MONO -> if (weight == Weight.REGULAR) R.font.jetbrains_mono_regular else R.font.jetbrains_mono_medium
+        FontFamilyId.JETBRAINS_MONO ->
+            if (weight == Weight.REGULAR || weight == Weight.LIGHT) R.font.jetbrains_mono_regular else R.font.jetbrains_mono_medium
+        FontFamilyId.POPPINS -> when (weight) {
+            Weight.BOLD -> R.font.poppins_semibold
+            Weight.MEDIUM -> R.font.poppins_medium
+            Weight.REGULAR -> R.font.poppins_regular
+            Weight.LIGHT -> R.font.poppins_light
+        }
+        FontFamilyId.LATO -> when {
+            italic -> R.font.lato_italic
+            weight == Weight.BOLD -> R.font.lato_bold
+            weight == Weight.LIGHT -> R.font.lato_light
+            else -> R.font.lato_regular
+        }
     }
 }

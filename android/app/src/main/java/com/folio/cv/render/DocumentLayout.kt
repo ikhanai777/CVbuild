@@ -15,10 +15,13 @@ import com.folio.cv.model.Resume
 import com.folio.cv.model.Section
 import com.folio.cv.model.SectionContent
 import com.folio.cv.model.SectionType
+import com.folio.cv.template.ContactStyle
 import com.folio.cv.template.DateStyle
+import com.folio.cv.template.HeaderRule
 import com.folio.cv.template.HeaderStyle
 import com.folio.cv.template.HeadingStyle
 import com.folio.cv.template.LayoutKind
+import com.folio.cv.template.NameStyle
 import com.folio.cv.template.PhotoShape
 import com.folio.cv.template.SkillStyle
 import com.folio.cv.template.TemplateSpec
@@ -89,11 +92,29 @@ class DocumentLayout(private val fonts: FontRegistry) {
         val margin = max(30f, t.marginPt * d)
         val contentW = w - 2 * margin
 
-        val ink = t.palette.ink.toInt()
-        val secondary = t.palette.secondary.toInt()
-        val rule = t.palette.rule.toInt()
-        val accent = (resume.style.accent ?: t.palette.accent).toInt()
+        // Mutable so a dark sidebar can swap in light-on-dark colours while its blocks are built.
+        var ink = t.palette.ink.toInt()
+        var secondary = t.palette.secondary.toInt()
+        var rule = t.palette.rule.toInt()
+        var accent = (resume.style.accent ?: t.palette.accent).toInt()
         val type = t.type
+
+        /** Runs [block] with the sidebar's text colours when the template has a dark sidebar. */
+        fun <T> sidebarColors(block: () -> T): T {
+            val on = t.palette.onSidebar?.toInt() ?: return block()
+            val saved = listOf(ink, secondary, rule, accent)
+            ink = on
+            secondary = withAlpha(on, 200)
+            rule = withAlpha(on, 90)
+            accent = on
+            try {
+                return block()
+            } finally {
+                ink = saved[0]; secondary = saved[1]; rule = saved[2]; accent = saved[3]
+            }
+        }
+
+        fun withAlpha(color: Int, alpha: Int) = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
         val sectionGap = 17f * d
         val headGap = 7f * d
@@ -109,51 +130,102 @@ class DocumentLayout(private val fonts: FontRegistry) {
 
         fun run(): LaidOutDocument {
             page(0)
-            val headerBottom = header()
             val sections = resume.visibleSections
-
-            val sidebarLayout = t.layout != LayoutKind.SINGLE
-            val sideSections = if (sidebarLayout) sections.filter { it.type.prefersSidebar } else emptyList()
-            val mainSections = if (sideSections.isEmpty()) sections else sections.filterNot { it.type.prefersSidebar }
             val bottom = h - margin * 0.9f
             val nextTop = margin
 
-            var mainX = margin
-            var mainW = contentW
-            var fill: Pair<Float, Float>? = null
-            if (sideSections.isNotEmpty()) {
-                val gap = 22f * d
-                val sideW = contentW * t.sidebarFraction
-                mainW = contentW - sideW - gap
-                val sideX: Float
-                if (t.layout == LayoutKind.SIDEBAR_LEFT) {
-                    sideX = margin
-                    mainX = margin + sideW + gap
-                    fill = 0f to (margin + sideW + gap / 2)
-                } else {
-                    sideX = margin + mainW + gap
-                    fill = (margin + mainW + gap / 2) to w
-                }
-                val sideBlocks = sideSections.flatMapIndexed { i, s -> sectionBlocks(s, sideW, inSidebar = true, number = i + 1, first = i == 0) }
-                flow(sideBlocks, sideX, headerBottom, nextTop, bottom)
+            val sidebarLayout = t.layout != LayoutKind.SINGLE
+            val sidebarHeader = t.header == HeaderStyle.SIDEBAR && sidebarLayout
+            val summaryFirst = t.summaryFullWidth && !sidebarHeader
+            val summary = if (summaryFirst) sections.filter { it.type == SectionType.SUMMARY } else emptyList()
+            val rest = sections.filterNot { it in summary }
+            val contactsInSide = sidebarLayout && t.contactStyle == ContactStyle.SIDEBAR &&
+                resume.header.contactItems().isNotEmpty()
+            val sideSections = if (sidebarLayout) rest.filter { it.type in t.sidebarSections } else emptyList()
+            val useSidebar = sideSections.isNotEmpty() || contactsInSide || sidebarHeader
+            val mainSections = if (useSidebar) rest.filterNot { it.type in t.sidebarSections } else rest
+
+            val gap = (if (sidebarHeader) 32f else 22f) * d
+            val sideW = if (useSidebar) contentW * t.sidebarFraction else 0f
+            val mainW = if (useSidebar) contentW - sideW - gap else contentW
+            val leftSide = t.layout == LayoutKind.SIDEBAR_LEFT
+            val sideX = if (leftSide) margin else margin + mainW + gap
+            val mainX = if (useSidebar && leftSide) margin + sideW + gap else margin
+            val divider = if (leftSide) margin + sideW + gap / 2 else margin + mainW + gap / 2
+
+            var headerBottom = if (sidebarHeader) headerSidebar(mainX, mainW) else header()
+            if (t.headerRule != HeaderRule.NONE && !sidebarHeader) {
+                val ry = headerBottom - 6f * d
+                page(0).add(
+                    Placed(
+                        0f, 0f,
+                        if (t.headerRule == HeaderRule.THICK) LineOp(0f, ry, w, ry, rule, 4f)
+                        else LineOp(margin, ry, margin + contentW, ry, secondary, 0.6f),
+                    ),
+                )
+                headerBottom += 16f * d
             }
-            val mainBlocks = mainSections.flatMapIndexed { i, s -> sectionBlocks(s, mainW, inSidebar = false, number = i + 1, first = i == 0) }
-            flow(mainBlocks, mainX, headerBottom, nextTop, bottom)
+
+            var colPage = 0
+            var colTop = headerBottom
+            if (summary.isNotEmpty()) {
+                val blocks = summary.flatMapIndexed { i, sct -> sectionBlocks(sct, contentW, inSidebar = false, number = i + 1, first = i == 0) }
+                val (p, y) = flow(blocks, margin, headerBottom, nextTop, bottom)
+                colPage = p
+                colTop = y + sectionGap * 1.3f
+            }
+
+            if (useSidebar) {
+                var sideTop = colTop
+                if (sidebarHeader) {
+                    sideTop = margin
+                    photoPath()?.let { photo ->
+                        val size = min(sideW * 0.8f, 124f)
+                        page(0).add(Placed(0f, 0f, PhotoOp(photo, sideX + (sideW - size) / 2, margin, size, t.photo)))
+                        sideTop = margin + size + 24f * d
+                    }
+                }
+                val sideBlocks = sidebarColors {
+                    val list = mutableListOf<Block>()
+                    if (contactsInSide) list.addAll(contactSectionBlocks(sideW))
+                    sideSections.forEachIndexed { i, sct ->
+                        list.addAll(sectionBlocks(sct, sideW, inSidebar = true, number = i + 1, first = i == 0 && !contactsInSide))
+                    }
+                    list
+                }
+                flow(sideBlocks, sideX, sideTop, nextTop, bottom, startPage = colPage)
+            }
+            val mainBlocks = mainSections.flatMapIndexed { i, sct -> sectionBlocks(sct, mainW, inSidebar = false, number = i + 1, first = i == 0) }
+            flow(mainBlocks, mainX, colTop, nextTop, bottom, startPage = colPage)
 
             val count = pages.size
             val result = pages.mapIndexed { index, ops ->
                 val background = mutableListOf<Placed>()
-                fill?.let { (l, r) ->
-                    val fillColor = (t.palette.sidebarFill ?: 0xFFF5F5F7).toInt()
-                    val top = if (index == 0) headerBottom - 12f * d else 0f
-                    background.add(Placed(0f, 0f, RectOp(l, top, r, h, fillColor)))
+                if (useSidebar && index >= colPage) {
+                    val top = when {
+                        sidebarHeader || index > colPage -> 0f
+                        else -> colTop - 12f * d
+                    }
+                    if (t.sidebarBackground) {
+                        // A dark sidebar is the template's accent, so changing the accent recolours it.
+                        val fillColor = if (t.palette.onSidebar != null) {
+                            (resume.style.accent ?: t.palette.sidebarFill ?: t.palette.accent).toInt()
+                        } else (t.palette.sidebarFill ?: 0xFFF5F5F7).toInt()
+                        val (l, r) = if (leftSide) 0f to divider else divider to w
+                        background.add(Placed(0f, 0f, RectOp(l, top, r, h, fillColor)))
+                    }
+                    if (t.columnRule) {
+                        val ruleTop = if (top == 0f) margin else colTop
+                        background.add(Placed(0f, 0f, LineOp(divider, ruleTop, divider, bottom, secondary, 0.6f)))
+                    }
                 }
                 if (t.pageFrame) background.addAll(frame(index, count))
                 val footer = mutableListOf<Placed>()
                 if (count > 1 && index > 0 && !t.pageFrame) {
                     val p = paint(type.meta, secondary)
                     val label = "${resume.header.fullName.ifBlank { resume.name }}  ·  ${index + 1} / $count"
-                    footer.add(Placed(0f, 0f, LabelOp(label, p, w - margin - p.measureText(label), h - margin * 0.45f)))
+                    val fx = if (useSidebar && t.palette.onSidebar != null && !leftSide) margin else w - margin - p.measureText(label)
+                    footer.add(Placed(0f, 0f, LabelOp(label, p, fx, h - margin * 0.45f)))
                 }
                 LaidOutPage(background + ops + footer)
             }
@@ -163,8 +235,8 @@ class DocumentLayout(private val fonts: FontRegistry) {
         // ---------------------------------------------------------------- flow
 
         /** Places blocks top to bottom, breaking pages so keep-with-next chains never split. */
-        fun flow(blocks: List<Block>, x: Float, firstTop: Float, nextTop: Float, bottom: Float) {
-            var pageIndex = 0
+        fun flow(blocks: List<Block>, x: Float, firstTop: Float, nextTop: Float, bottom: Float, startPage: Int = 0): Pair<Int, Float> {
+            var pageIndex = startPage
             var y = firstTop
             var top = firstTop
             var i = 0
@@ -189,6 +261,7 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 y += sb + b.height
                 i++
             }
+            return pageIndex to y
         }
 
         // ---------------------------------------------------------------- text helpers
@@ -223,8 +296,13 @@ class DocumentLayout(private val fonts: FontRegistry) {
         }
 
         fun nameText(color: Int, credentialColor: Int): CharSequence {
-            val name = resume.header.fullName.ifBlank { "Your Name" }
-            val sb = SpannableStringBuilder(cased(name, type.name))
+            val name = resume.header.fullName.trim().ifBlank { "Your Name" }
+            val parts = name.split(Regex("\\s+"), limit = 2)
+            val stacked = t.nameStyle != NameStyle.INLINE && parts.size == 2
+            val sb = SpannableStringBuilder(cased(if (stacked) parts[0] + "\n" + parts[1] else name, type.name))
+            if (stacked && t.nameStyle == NameStyle.BOLD_LIGHT) {
+                sb.setSpan(FontSpan(fonts.get(type.name.family, Weight.LIGHT)), parts[0].length + 1, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
             val creds = resume.header.credentials.trim()
             if (creds.isNotEmpty()) {
                 val start = sb.length
@@ -265,7 +343,14 @@ class DocumentLayout(private val fonts: FontRegistry) {
             HeaderStyle.SPLIT -> headerSplit()
             HeaderStyle.BAND -> headerBand()
             HeaderStyle.TITLE_BLOCK -> headerTitleBlock()
+            HeaderStyle.PHOTO_LEFT -> headerPhotoLeft()
+            // Without a sidebar column there is nowhere for the photo to go: fall back to a plain header.
+            HeaderStyle.SIDEBAR -> headerStacked(Layout.Alignment.ALIGN_NORMAL)
         }
+
+        /** The sidebar lists the contacts, so headers leave them out. */
+        val contactsInSidebar: Boolean
+            get() = t.contactStyle == ContactStyle.SIDEBAR && t.layout != LayoutKind.SINGLE
 
         fun photoPath(): String? =
             resume.header.photoPath?.takeIf { t.photo != PhotoShape.NONE && resume.style.showPhoto }
@@ -278,6 +363,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
             val photoSize = 72f
             val textW = if (photo != null) contentW - photoSize - 16f else contentW
             var y = top
+            if (centered) photoPath()?.let {
+                val size = 80f
+                out.add(Placed(0f, 0f, PhotoOp(it, margin + (contentW - size) / 2, y, size, t.photo)))
+                y += size + 14f * d
+            }
 
             val nameL = layout(nameText(nameColor, secondary), paint(type.name, nameColor), textW, type.name, align)
             out.add(Placed(margin, y, TextOp(nameL)))
@@ -289,8 +379,13 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 y += hl.height
             }
             val metaPaint = paint(type.meta, secondary)
-            val contacts = contactLines(if (centered) "   |   " else "   ·   ", metaPaint, textW)
-            if (contacts.isNotEmpty()) {
+            val contacts = if (contactsInSidebar) "" else contactLines(if (centered) "   |   " else "   ·   ", metaPaint, textW)
+            if (t.contactStyle != ContactStyle.LINE && !centered) {
+                if (contacts.isNotEmpty()) {
+                    y += 10f * d
+                    y += iconContacts(out, margin, y, textW)
+                }
+            } else if (contacts.isNotEmpty()) {
                 y += 7f * d
                 val cl = layout(contacts, metaPaint, textW, type.meta, align)
                 out.add(Placed(margin, y, TextOp(cl)))
@@ -306,6 +401,109 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 y += 2f
             }
             return y + 20f * d
+        }
+
+        /** Name, headline and contacts for a block of text at [x]; returns the ops and the height. */
+        fun nameBlock(x: Float, width: Float, contacts: Boolean): Pair<List<Placed>, Float> {
+            val out = mutableListOf<Placed>()
+            var y = 0f
+            val nameL = layout(nameText(nameColor, secondary), paint(type.name, nameColor), width, type.name)
+            out.add(Placed(x, y, TextOp(nameL)))
+            y += nameL.height
+            if (resume.header.headline.isNotBlank()) {
+                y += 5f * d
+                val hl = layout(cased(resume.header.headline, type.headline), paint(type.headline, secondary), width, type.headline)
+                out.add(Placed(x, y, TextOp(hl)))
+                y += hl.height
+            }
+            if (contacts && resume.header.contactItems().isNotEmpty()) {
+                y += 12f * d
+                if (t.contactStyle == ContactStyle.LINE) {
+                    val mp = paint(type.meta, secondary)
+                    val cl = layout(contactLines("   ·   ", mp, width), mp, width, type.meta)
+                    out.add(Placed(x, y, TextOp(cl)))
+                    y += cl.height
+                } else {
+                    y += iconContacts(out, x, y, width)
+                }
+            }
+            return out to y
+        }
+
+        /** A large photo on a soft ring, with the name block centred beside it. */
+        fun headerPhotoLeft(): Float {
+            val out = page(0)
+            val top = margin
+            val photo = photoPath()
+            val size = 96f
+            val ring = 6f
+            val textX = if (photo != null) margin + size + 2 * ring + 28f * d else margin
+            val (items, textH) = nameBlock(0f, margin + contentW - textX, contacts = !contactsInSidebar)
+            val blockH = max(textH, if (photo != null) size + 2 * ring else 0f)
+            val textTop = top + (blockH - textH) / 2
+            if (photo != null) {
+                val photoTop = top + (blockH - size) / 2
+                out.add(Placed(0f, 0f, CircleOp(margin + ring + size / 2, photoTop + size / 2, size / 2 + ring, withAlpha(rule, 150))))
+                out.add(Placed(0f, 0f, PhotoOp(photo, margin + ring, photoTop, size, t.photo)))
+            }
+            items.forEach { out.add(Placed(textX + it.x, textTop + it.y, it.op)) }
+            return top + blockH + 24f * d
+        }
+
+        /** The main column's opening: name and headline (and contacts unless the sidebar carries them). */
+        fun headerSidebar(x: Float, width: Float): Float {
+            val (items, height) = nameBlock(x, width, contacts = !contactsInSidebar)
+            page(0).addAll(items.map { Placed(it.x, margin + it.y, it.op) })
+            return margin + height + 24f * d
+        }
+
+        /**
+         * Contact items with a drawn icon each, in two columns when they fit side by side.
+         * Adds ops to [out] at absolute positions and returns the height used.
+         */
+        fun iconContacts(out: MutableList<Placed>, x: Float, top: Float, width: Float): Float {
+            val items = resume.header.contactItems()
+            if (items.isEmpty()) return 0f
+            val p = paint(type.meta, secondary)
+            val iconSize = type.meta.sizePt * 1.1f
+            val iconGap = 6f
+            val colGap = 24f
+            fun cellW(i: Int) = iconSize + iconGap + p.measureText(items[i].value)
+            val firstCol = items.indices.filter { it % 2 == 0 }.maxOf { cellW(it) }
+            val secondCol = items.indices.filter { it % 2 == 1 }.maxOfOrNull { cellW(it) } ?: 0f
+            val cols = if (items.size > 1 && firstCol + colGap + secondCol <= width) 2 else 1
+            val rowGap = 5f * d
+            var y = top
+            items.chunked(cols).forEach { row ->
+                var rowH = 0f
+                row.forEachIndexed { c, item ->
+                    val cx = x + if (c == 1) firstCol + colGap else 0f
+                    val l = layout(item.value, p, width - (cx - x) - iconSize - iconGap, type.meta)
+                    out.add(Placed(cx + iconSize + iconGap, y, TextOp(l)))
+                    val mid = y + l.getLineBaseline(0) - type.meta.sizePt * 0.34f
+                    out.add(Placed(0f, 0f, IconOp(item.kind, cx, mid - iconSize / 2, iconSize, accent)))
+                    rowH = max(rowH, l.height.toFloat())
+                }
+                y += rowH + rowGap
+            }
+            return y - rowGap - top
+        }
+
+        /** A "Contact" section for the sidebar: one icon and value per line. */
+        fun contactSectionBlocks(width: Float): List<Block> {
+            val blocks = mutableListOf(headingBlock("Contact", width, 0, 0f))
+            val p = paint(type.meta, ink)
+            val iconSize = type.meta.sizePt * 1.1f
+            val iconGap = 7f
+            resume.header.contactItems().forEachIndexed { i, item ->
+                val b = BlockBuilder()
+                val l = layout(item.value, p, width - iconSize - iconGap, type.meta)
+                b.height = b.text(iconSize + iconGap, 0f, l)
+                val mid = l.getLineBaseline(0) - type.meta.sizePt * 0.34f
+                b.add(0f, 0f, IconOp(item.kind, 0f, mid - iconSize / 2, iconSize, accent))
+                blocks.add(b.build(if (i == 0) headGap else 6f * d))
+            }
+            return blocks
         }
 
         fun headerSplit(): Float {
@@ -485,23 +683,52 @@ class DocumentLayout(private val fonts: FontRegistry) {
             when (section.type.content) {
                 SectionContent.TEXT -> section.text.split(Regex("\\n\\s*\\n")).map { it.trim() }.filter { it.isNotEmpty() }
                     .forEachIndexed { i, para ->
+                        val role = if (inSidebar) type.body.copy(sizePt = type.body.sizePt * 0.94f) else type.body
                         val b = BlockBuilder()
-                        b.height = b.text(0f, 0f, layout(para, paint(type.body, ink), width, type.body))
+                        b.height = b.text(0f, 0f, layout(para, paint(role, ink), width, role))
                         blocks.add(b.build(spaceBefore = if (i == 0) headGap else 5f * d))
                     }
                 SectionContent.GROUPS -> blocks.addAll(groupBlocks(section, width))
-                SectionContent.ENTRIES -> {
+                SectionContent.ENTRIES -> if (section.type == SectionType.REFERENCES && !inSidebar && width > 280f) {
+                    blocks.addAll(referenceBlocks(section.entries.filterNot { it.isBlank }, width))
+                } else {
                     val style = when {
                         inSidebar -> DateStyle.BELOW
                         section.type == SectionType.CERTIFICATIONS && t.dates == DateStyle.GUTTER -> DateStyle.RIGHT
                         else -> t.dates
                     }
                     section.entries.filterNot { it.isBlank }.forEachIndexed { i, entry ->
-                        blocks.addAll(entryBlocks(entry, width, style, if (i == 0) headGap else entryGap, compact = inSidebar))
+                        blocks.addAll(entryBlocks(entry, width, style, if (i == 0) headGap else entryGap, compact = inSidebar, first = i == 0))
                     }
                 }
             }
             return blocks
+        }
+
+        /** References side by side, two to a row: name, role, then contact lines. */
+        fun referenceBlocks(entries: List<Entry>, width: Float): List<Block> {
+            val gap = 20f
+            val colW = (width - gap) / 2
+            return entries.chunked(2).mapIndexed { row, pair ->
+                val b = BlockBuilder()
+                var tallest = 0f
+                pair.forEachIndexed { c, e ->
+                    val x = c * (colW + gap)
+                    var y = b.text(x, 0f, layout(e.title.ifBlank { e.organization }, paint(type.entryTitle, ink), colW, type.entryTitle))
+                    val org = if (e.title.isBlank()) "" else listOf(e.organization, e.location).filter { it.isNotBlank() }.joinToString(", ")
+                    if (org.isNotEmpty()) {
+                        y += 1.5f * d
+                        y += b.text(x, y, layout(org, paint(type.body, secondary), colW, type.body))
+                    }
+                    if (e.description.isNotBlank()) {
+                        y += 3f * d
+                        y += b.text(x, y, layout(e.description.trim(), paint(type.meta, secondary), colW, type.meta))
+                    }
+                    tallest = max(tallest, y)
+                }
+                b.height = tallest
+                b.build(if (row == 0) headGap else entryGap)
+            }
         }
 
         fun headingBlock(title: String, width: Float, number: Int, spaceBefore: Float): Block {
@@ -536,6 +763,12 @@ class DocumentLayout(private val fonts: FontRegistry) {
                     b.height = b.text(indent, 0f, l)
                     b.add(0f, 0f, RectOp(0f, 1f, 3f, l.height - 1f, accent, radius = 1.5f))
                 }
+                HeadingStyle.UNDERLINE -> {
+                    val lh = b.text(0f, 0f, layout(text, paint(role, ink), width, role))
+                    val ry = lh + 4f * d
+                    b.add(0f, 0f, LineOp(0f, ry, width, ry, secondary, 0.7f))
+                    b.height = ry + 0.7f
+                }
                 HeadingStyle.NUMBERED -> {
                     val numberText = "$number.0"
                     val np = paint(role, accent)
@@ -550,7 +783,7 @@ class DocumentLayout(private val fonts: FontRegistry) {
             return b.build(spaceBefore, keepWithNext = true)
         }
 
-        fun entryBlocks(e: Entry, width: Float, style: DateStyle, spaceBefore: Float, compact: Boolean): List<Block> {
+        fun entryBlocks(e: Entry, width: Float, style: DateStyle, spaceBefore: Float, compact: Boolean, first: Boolean): List<Block> {
             val date = Dates.range(e.start, e.end, e.current, resume.style.dateFormat)
             val title = e.title.ifBlank { e.organization }
             val org = if (e.title.isBlank()) e.location
@@ -561,7 +794,32 @@ class DocumentLayout(private val fonts: FontRegistry) {
             val head = BlockBuilder()
             var indent = 0f
             var y = 0f
+            val markerX = 4f
+            val markerR = 3.2f
             when (style) {
+                DateStyle.TIMELINE -> {
+                    indent = 17f
+                    var markerY: Float
+                    if (date.isNotEmpty()) {
+                        val dateRole = type.meta.copy(weight = Weight.BOLD)
+                        val dl = layout(date, paint(dateRole, if (e.current) accent else secondary), width - indent, dateRole)
+                        y += head.text(indent, 0f, dl) + 2f * d
+                        markerY = dl.getLineBaseline(0) - dateRole.sizePt * 0.34f
+                        val tl = layout(title, paint(titleRole, ink), width - indent, titleRole)
+                        y += head.text(indent, y, tl)
+                    } else {
+                        val tl = layout(title, paint(titleRole, ink), width - indent, titleRole)
+                        y += head.text(indent, 0f, tl)
+                        markerY = tl.getLineBaseline(0) - titleRole.sizePt * 0.34f
+                    }
+                    if (org.isNotEmpty()) {
+                        y += 1.5f * d
+                        y += head.text(indent, y, layout(org, paint(bodyRole, secondary), width - indent, bodyRole))
+                    }
+                    head.add(0f, 0f, CircleOp(markerX, markerY, markerR, accent, strokeWidth = 1.2f))
+                    head.add(0f, 0f, LineOp(markerX, markerY + markerR + 1.5f, markerX, y, rule, 1f))
+                    if (!first) head.add(0f, 0f, LineOp(markerX, -spaceBefore, markerX, markerY - markerR - 1.5f, rule, 1f))
+                }
                 DateStyle.RIGHT -> {
                     val dp = paint(type.meta, secondary)
                     val dateW = if (date.isEmpty()) 0f else dp.measureText(date)
@@ -623,7 +881,11 @@ class DocumentLayout(private val fonts: FontRegistry) {
                 b.height = b.text(indent, 0f, layout(e.tags.joinToString("  ·  "), paint(type.meta, secondary), innerW, type.meta))
                 rest.add(b.build(spaceBefore = 3.5f * d))
             }
-            return listOf(head.build(spaceBefore, keepWithNext = rest.isNotEmpty())) + rest
+            val body = if (style != DateStyle.TIMELINE) rest else rest.map { b ->
+                // Carry the timeline down through the entry's text, bridging the gap above each block.
+                Block(b.height, b.spaceBefore, b.keepWithNext, b.items + Placed(0f, 0f, LineOp(markerX, -b.spaceBefore, markerX, b.height, rule, 1f)))
+            }
+            return listOf(head.build(spaceBefore, keepWithNext = body.isNotEmpty())) + body
         }
 
         fun bulletBlock(text: String, indent: Float, width: Float, role: TypeRole, spaceBefore: Float): Block {
@@ -671,8 +933,40 @@ class DocumentLayout(private val fonts: FontRegistry) {
                         b.build(sb)
                     }
                     SkillStyle.TAGS -> tagsBlock(g.name, g.items, width, sb)
+                    SkillStyle.BULLETS -> bulletListBlock(g.name, g.items, width, sb)
                 }
             }
+        }
+
+        /** Items as a bulleted list, split into two columns when the column is wide enough. */
+        fun bulletListBlock(label: String, items: List<String>, width: Float, spaceBefore: Float): Block {
+            val b = BlockBuilder()
+            var y = 0f
+            if (label.isNotBlank()) {
+                val role = type.entryTitle.copy(sizePt = type.entryTitle.sizePt * 0.92f)
+                y += b.text(0f, 0f, layout(label.trim(), paint(role, ink), width, role)) + 3f * d
+            }
+            val role = type.body.copy(sizePt = type.body.sizePt * 0.97f)
+            val cols = if (width > 300f && items.size > 3) 2 else 1
+            val colGap = 16f
+            val colW = (width - (cols - 1) * colGap) / cols
+            val hang = role.sizePt * 1.1f
+            val glyph = paint(role.copy(tracking = 0f), accent)
+            val perCol = (items.size + cols - 1) / cols
+            var bottom = y
+            items.chunked(perCol).forEachIndexed { c, column ->
+                val x = c * (colW + colGap)
+                var cy = y
+                column.forEach { item ->
+                    val l = layout(item, paint(role, ink), colW - hang, role)
+                    b.add(x + hang, cy, TextOp(l))
+                    b.add(x, cy, LabelOp(t.bulletGlyph, glyph, 0f, l.getLineBaseline(0).toFloat()))
+                    cy += l.height + 4f * d
+                }
+                bottom = max(bottom, cy - 4f * d)
+            }
+            b.height = bottom
+            return b.build(spaceBefore)
         }
 
         fun tagsBlock(label: String, items: List<String>, width: Float, spaceBefore: Float): Block {

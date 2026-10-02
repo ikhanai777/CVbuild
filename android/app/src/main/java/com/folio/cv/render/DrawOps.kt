@@ -11,6 +11,7 @@ import android.graphics.RectF
 import android.text.Layout
 import android.text.TextPaint
 import android.util.LruCache
+import com.folio.cv.model.ContactKind
 import com.folio.cv.template.PhotoShape
 import kotlin.math.min
 
@@ -60,8 +61,14 @@ class LineOp(
     override fun draw(canvas: Canvas, images: ImageCache) = canvas.drawLine(x1, y1, x2, y2, paint)
 }
 
-class CircleOp(val cx: Float, val cy: Float, val r: Float, color: Int) : DrawOp {
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+class CircleOp(val cx: Float, val cy: Float, val r: Float, color: Int, strokeWidth: Float = 0f) : DrawOp {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = color
+        if (strokeWidth > 0f) {
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+        }
+    }
     override fun draw(canvas: Canvas, images: ImageCache) = canvas.drawCircle(cx, cy, r, paint)
 }
 
@@ -79,6 +86,66 @@ class PhotoOp(val path: String, val left: Float, val top: Float, val size: Float
         canvas.save()
         canvas.clipPath(clip)
         canvas.drawBitmap(bitmap, src, dst, Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+        canvas.restore()
+    }
+}
+
+/** A small line icon for a contact item, drawn as vector paths so it stays sharp in the PDF. */
+class IconOp(val kind: ContactKind, val x: Float, val y: Float, val size: Float, color: Int) : DrawOp {
+    private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = color
+        style = Paint.Style.STROKE
+        strokeWidth = size * 0.1f
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
+    }
+    private val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+
+    override fun draw(canvas: Canvas, images: ImageCache) {
+        val s = size
+        canvas.save()
+        canvas.translate(x, y)
+        when (kind) {
+            ContactKind.EMAIL -> {
+                canvas.drawRoundRect(0.05f * s, 0.2f * s, 0.95f * s, 0.8f * s, 0.08f * s, 0.08f * s, stroke)
+                val v = Path().apply {
+                    moveTo(0.1f * s, 0.27f * s); lineTo(0.5f * s, 0.55f * s); lineTo(0.9f * s, 0.27f * s)
+                }
+                canvas.drawPath(v, stroke)
+            }
+            ContactKind.PHONE -> {
+                canvas.drawRoundRect(0.25f * s, 0.04f * s, 0.75f * s, 0.96f * s, 0.12f * s, 0.12f * s, stroke)
+                canvas.drawCircle(0.5f * s, 0.8f * s, 0.055f * s, fill)
+            }
+            ContactKind.LOCATION -> {
+                val pin = Path().apply {
+                    moveTo(0.5f * s, 0.96f * s)
+                    cubicTo(0.2f * s, 0.62f * s, 0.14f * s, 0.48f * s, 0.14f * s, 0.38f * s)
+                    cubicTo(0.14f * s, 0.16f * s, 0.3f * s, 0.03f * s, 0.5f * s, 0.03f * s)
+                    cubicTo(0.7f * s, 0.03f * s, 0.86f * s, 0.16f * s, 0.86f * s, 0.38f * s)
+                    cubicTo(0.86f * s, 0.48f * s, 0.8f * s, 0.62f * s, 0.5f * s, 0.96f * s)
+                    close()
+                }
+                canvas.drawPath(pin, stroke)
+                canvas.drawCircle(0.5f * s, 0.38f * s, 0.12f * s, stroke)
+            }
+            ContactKind.WEBSITE -> {
+                canvas.drawCircle(0.5f * s, 0.5f * s, 0.43f * s, stroke)
+                canvas.drawOval(0.3f * s, 0.07f * s, 0.7f * s, 0.93f * s, stroke)
+                canvas.drawLine(0.07f * s, 0.5f * s, 0.93f * s, 0.5f * s, stroke)
+            }
+            ContactKind.LINKEDIN, ContactKind.GITHUB -> {
+                canvas.drawRoundRect(0.06f * s, 0.06f * s, 0.94f * s, 0.94f * s, 0.16f * s, 0.16f * s, stroke)
+                val label = if (kind == ContactKind.LINKEDIN) "in" else "gh"
+                val tp = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = fill.color
+                    textSize = s * 0.5f
+                    isFakeBoldText = true
+                    textAlign = Paint.Align.CENTER
+                }
+                canvas.drawText(label, 0.5f * s, 0.68f * s, tp)
+            }
+        }
         canvas.restore()
     }
 }
